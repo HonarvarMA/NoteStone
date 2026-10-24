@@ -3348,7 +3348,7 @@
                 `<div class="${edgeBtnClass(ok)}"${ok ? ` onclick="event.stopPropagation(); draftRemoveEdge('${side}')"` : ''}>${lbl}</div>`;
 
             const sectionHead = (icon, text) =>
-                `<div class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2.5 pb-1.5 border-b border-gray-200">${icon}<span>${text}</span></div>`;
+                `<div class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5 pb-1.5 border-b border-gray-200">${icon}<span>${text}</span></div>`;
 
             let html = `<div class="menu-panel-container flex flex-col items-center gap-2 cursor-default w-max">`;
             html += `<div class="w-full">${sectionHead(svgGrid, 'Board Size')}</div>`;
@@ -3378,7 +3378,7 @@
             // Bottom row: − near center (above), + further (below)
             html += `<div class="flex flex-col items-center gap-1">${remBtn('bottom', '−', canRmBot)}${addBtn('bottom', '+')}</div>`;
 
-            html += `<div class="w-full mt-2 pt-2 border-t border-gray-200">`;
+            html += `<div class="w-full mt-1 pt-1">`;
             html += sectionHead(svgSpacing, 'Grid Spacing');
             html += `<div class="grid grid-cols-2 gap-2">`;
             html += `<label class="flex flex-col gap-1 text-[10px] font-medium text-gray-600">Column gap (px)<input type="number" min="0" max="100" step="1" value="${columnGap}" aria-label="Gap between columns in pixels" class="w-full box-border rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-800" onclick="event.stopPropagation()" oninput="updateGridGap('column', this)"></label>`;
