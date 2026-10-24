@@ -232,7 +232,7 @@
             position: absolute;
             top: calc(var(--cell-size) - 18px);
             left: 50%;
-            width: 54px;
+            width: 76px;
             height: 18px;
             flex: none;
             display: flex;
@@ -242,11 +242,14 @@
             z-index: 8;
             box-sizing: border-box;
             border-radius: 9999px;
+            transform: translateX(-50%);
+            transition: opacity 0.2s ease;
+        }
+
+        .grid-cell:not(.cell-status-normal) .cell-underline-dock {
             background: rgba(255, 255, 255, 0.82);
             box-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(2px);
-            transform: translateX(-50%);
-            transition: opacity 0.2s ease;
         }
 
         .grid-cell.cell-status-normal .cell-underline-dock .underline-svg {
@@ -936,15 +939,6 @@
 
         .selection-ring {
             outline: none !important;
-        }
-
-        .selection-window {
-            position: absolute;
-            border: 2px dotted currentColor;
-            background: color-mix(in srgb, currentColor 15%, transparent);
-            pointer-events: none;
-            z-index: 70;
-            box-sizing: border-box;
         }
 
         .stone-wrapper {
@@ -2615,7 +2609,6 @@
         let currentDropDir = null;
         let currentDropAnchor = null;
         let windowSelection = null;
-        let windowSelectionOverlay = null;
         let suppressedMarqueeClick = null;
 
         let isCapturingScreenshot = false;
@@ -4134,18 +4127,12 @@
         }
 
         function updateWindowSelection(clientX, clientY) {
-            if (!windowSelection || !windowSelection.started || !windowSelectionOverlay) return;
+            if (!windowSelection || !windowSelection.started) return;
 
-            const gridRect = gridElement.getBoundingClientRect();
             const left = Math.min(windowSelection.startX, clientX);
             const top = Math.min(windowSelection.startY, clientY);
             const right = Math.max(windowSelection.startX, clientX);
             const bottom = Math.max(windowSelection.startY, clientY);
-
-            windowSelectionOverlay.style.left = `${left - gridRect.left}px`;
-            windowSelectionOverlay.style.top = `${top - gridRect.top}px`;
-            windowSelectionOverlay.style.width = `${Math.max(0, right - left)}px`;
-            windowSelectionOverlay.style.height = `${Math.max(0, bottom - top)}px`;
 
             const selectedIndices = [];
             const totalCells = totalRows * totalCols;
@@ -4177,10 +4164,6 @@
                 el.draggable = false;
             });
 
-            windowSelectionOverlay = document.createElement('div');
-            windowSelectionOverlay.className = 'selection-window';
-            windowSelectionOverlay.style.color = getTitleColorHex();
-            gridElement.appendChild(windowSelectionOverlay);
         }
 
         let suppressedMarqueeClickUntil = 0;
@@ -4199,8 +4182,6 @@
 
             if (selection.started) {
                 if (!wasCancelled) updateWindowSelection(pointerX, pointerY);
-                windowSelectionOverlay?.remove();
-                windowSelectionOverlay = null;
                 if (!wasCancelled) {
                     suppressedMarqueeClickUntil = Date.now() + 150;
                     if (selectedNotes.size === 1) {
