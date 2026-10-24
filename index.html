@@ -232,7 +232,8 @@
             position: absolute;
             top: calc(var(--cell-size) - 18px);
             left: 50%;
-            width: 76px;
+            width: 72%;
+            max-width: calc(100% - 8px);
             height: 18px;
             flex: none;
             display: flex;
@@ -952,7 +953,7 @@
             justify-content: center;
             flex-shrink: 0;
             position: relative;
-            z-index: 5;
+            z-index: auto;
             margin-top: 0px;
             cursor: default;
             border-radius: 50%;
@@ -3746,7 +3747,7 @@
             });
             html += `</div>`;
 
-            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'left');
+            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'right');
         }
 
         window.changeNoteColorKeepEditing = function (idx, color) {
@@ -3790,7 +3791,7 @@
             });
 
             html += `</div>`;
-            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'right');
+            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'left');
         }
 
         function commitCurrentEdit() {
@@ -4852,8 +4853,8 @@
                                 } else note.text = newText;
                                 editingIndex = null; activeMenuIndex = null; saveData(); renderGrid();
                             }, 'Save note'));
-                            // Top-Left: Color
-                            dragWrapper.appendChild(createMenuButton('-top-2 -left-2 w-7 h-7', iconPalette, (e) => {
+                            // Bottom-Right: Color
+                            dragWrapper.appendChild(createMenuButton('-bottom-2 -right-2 w-7 h-7', iconPalette, (e) => {
                                 activeMenuIndex = i;
                                 cell.classList.add('has-menu');
                                 note.text = inputContainer.innerText;
@@ -4868,8 +4869,8 @@
                                 toggleStatusContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                             }, 'Change status'));
 
-                            // Bottom-Right: Font Size
-                            dragWrapper.appendChild(createMenuButton('-bottom-2 -right-2 w-7 h-7', iconFont, (e) => {
+                            // Top-Left: Font Size
+                            dragWrapper.appendChild(createMenuButton('-top-2 -left-2 w-7 h-7', iconFont, (e) => {
                                 activeMenuIndex = i;
                                 cell.classList.add('has-menu');
                                 note.text = inputContainer.innerText;
@@ -4896,8 +4897,8 @@
                                         renderGrid();
                                     }, 'Edit note'));
 
-                                    // Top-Left: Color
-                                    dragWrapper.appendChild(createMenuButton(`-top-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconPalette, (e) => {
+                                    // Bottom-Right: Color
+                                    dragWrapper.appendChild(createMenuButton(`-bottom-2 -right-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconPalette, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
@@ -4912,8 +4913,8 @@
                                         toggleStatusContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                                     }, 'Change status'));
 
-                                    // Bottom-Right: Font Size
-                                    dragWrapper.appendChild(createMenuButton(`-bottom-2 -right-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconFont, (e) => {
+                                    // Top-Left: Font Size
+                                    dragWrapper.appendChild(createMenuButton(`-top-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconFont, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
