@@ -30,7 +30,8 @@
             --app-padding-horizontal: 20px;
             --header-grid-gap: 10px;
             --cell-size: 80px;
-            --grid-gap: 4px;
+            --grid-column-gap: 0px;
+            --grid-row-gap: 0px;
             --cell-size-min: 20px;
             --cell-size-max: 160px;
             /* The responsive layout shrinks cells to fit smaller screens. */
@@ -39,7 +40,7 @@
             --selected-stone-lift: 0px;
             --selected-stone-scale: 1.02;
             --selection-ring-width: 3px;
-            /* calc(2.5px + var(--grid-gap) * 0.5 - var(--cell-size) * 0.01); */
+            /* calc(2.5px + (var(--grid-column-gap) + var(--grid-row-gap)) * 0.25 - var(--cell-size) * 0.01); */
             --cell-height: var(--cell-size);
             --cell-padding-top: 0px;
             --plate-extra-h: 0px;
@@ -843,7 +844,8 @@
         #puzzle-grid {
             display: grid;
             position: relative;
-            gap: var(--grid-gap);
+            column-gap: var(--grid-column-gap);
+            row-gap: var(--grid-row-gap);
             margin: 0 auto;
         }
 
@@ -2514,6 +2516,7 @@
 
         // Application State
         let totalCols = 4, totalRows = 4;
+        let columnGap = 0, rowGap = 0;
 
         let notes = Array(16).fill(null);
         let pageColorIndex = 3; // Classic Light Gray (#e5e7eb)
@@ -2752,7 +2755,8 @@
             document.documentElement.style.setProperty('--visible-viewport-top', `${viewport ? viewport.offsetTop : 0}px`);
 
             const rootStyles = getComputedStyle(document.documentElement);
-            const gap = parseFloat(rootStyles.getPropertyValue('--grid-gap')) || 4;
+            const columnGapSize = columnGap;
+            const rowGapSize = rowGap;
             const minCellSize = parseFloat(rootStyles.getPropertyValue('--cell-size-min')) || 24;
             const maxCellSize = parseFloat(rootStyles.getPropertyValue('--cell-size-max')) || 160;
             const windowPadX = parseFloat(rootStyles.getPropertyValue('--window-padding-horizontal')) || 0;
@@ -2768,8 +2772,8 @@
             const availW = window.innerWidth - 2 * windowPadX - 2 * appPadX - extraGridInsetX;
             const availH = viewportHeight - 2 * windowPadY - appPadTop - appPadBottom - extraGridInsetY - headerHeight;
 
-            const maxCellW = (availW - (totalCols - 1) * gap) / totalCols;
-            const maxCellH = (availH - (totalRows - 1) * gap) / totalRows;
+            const maxCellW = (availW - (totalCols - 1) * columnGapSize) / totalCols;
+            const maxCellH = (availH - (totalRows - 1) * rowGapSize) / totalRows;
 
             let size = Math.min(maxCellW, maxCellH);
             size = Math.max(minCellSize, Math.min(size, maxCellSize));
@@ -2779,7 +2783,8 @@
             document.documentElement.style.setProperty('--cell-padding-top', '0px');
             document.documentElement.style.setProperty('--cell-height', `${cellH}px`);
             document.documentElement.style.setProperty('--plate-extra-h', '0px');
-            document.documentElement.style.setProperty('--grid-gap', `${gap}px`);
+            document.documentElement.style.setProperty('--grid-column-gap', `${columnGapSize}px`);
+            document.documentElement.style.setProperty('--grid-row-gap', `${rowGapSize}px`);
         }
         window.addEventListener('resize', resizeGrid);
         if (window.visualViewport) {
@@ -2864,6 +2869,8 @@
             return {
                 totalCols: parsedCols,
                 totalRows: parsedRows,
+                columnGap: Number.isFinite(rawData.columnGap) ? Math.round(Math.max(0, Math.min(100, rawData.columnGap))) : 0,
+                rowGap: Number.isFinite(rawData.rowGap) ? Math.round(Math.max(0, Math.min(100, rawData.rowGap))) : 0,
                 notes: rawData.notes,
                 titleState: rawData.titleState || null,
                 titleColorVersion: rawData.titleColorVersion || null,
@@ -2876,6 +2883,8 @@
 
         function applyLoadedData(data) {
             totalCols = data.totalCols; totalRows = data.totalRows;
+            columnGap = data.columnGap;
+            rowGap = data.rowGap;
             notes = data.notes;
             notes.forEach(n => {
                 if (n) {
@@ -2954,6 +2963,8 @@
                     rows: totalRows,
                     totalCols,
                     totalRows,
+                    columnGap,
+                    rowGap,
                     notes,
                     titleState,
                     titleColorVersion: 2,
@@ -3363,6 +3374,11 @@
             html += `<div class="flex items-center gap-1">${remBtn('right', '−', canRmRight)}${addBtn('right', '+')}</div>`;
             html += `</div>`;
 
+            html += `<div class="w-full grid grid-cols-2 gap-2 mt-1">`;
+            html += `<label class="flex flex-col gap-1 text-[10px] font-medium text-gray-600">Column gap (px)<input type="number" min="0" max="100" step="1" value="${columnGap}" aria-label="Gap between columns in pixels" class="w-full box-border rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-800" onclick="event.stopPropagation()" oninput="updateGridGap('column', this)"></label>`;
+            html += `<label class="flex flex-col gap-1 text-[10px] font-medium text-gray-600">Row gap (px)<input type="number" min="0" max="100" step="1" value="${rowGap}" aria-label="Gap between rows in pixels" class="w-full box-border rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-800" onclick="event.stopPropagation()" oninput="updateGridGap('row', this)"></label>`;
+            html += `</div>`;
+
             // Bottom row: − near center (above), + further (below)
             html += `<div class="flex flex-col items-center gap-1">${remBtn('bottom', '−', canRmBot)}${addBtn('bottom', '+')}</div>`;
 
@@ -3382,6 +3398,18 @@
 
             html += `</div>`;
             contextMenu.innerHTML = html;
+        }
+
+        function updateGridGap(axis, input) {
+            const value = Number(input.value);
+            if (!Number.isFinite(value)) return;
+            const gap = Math.round(Math.max(0, Math.min(100, value)));
+            input.value = String(gap);
+            if (axis === 'column') columnGap = gap;
+            else if (axis === 'row') rowGap = gap;
+            else return;
+            resizeGrid();
+            saveData();
         }
 
         function showGridContextMenu(x, y, anchorElement = null) {
@@ -4520,7 +4548,8 @@
 
             const cSizeStr = getComputedStyle(document.documentElement).getPropertyValue('--cell-size').trim();
             const cSize = parseFloat(cSizeStr);
-            const gSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap').trim());
+            const columnGapSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--grid-column-gap').trim()) || 0;
+            const rowGapSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--grid-row-gap').trim()) || 0;
 
             let minC = Infinity, maxC = -Infinity, minR = Infinity, maxR = -Infinity;
             draggedShape.indices.forEach(idx => {
@@ -4530,8 +4559,8 @@
             });
 
             const PAD = 32;
-            const contentW = (maxC - minC + 1) * cSize + (maxC - minC) * gSize;
-            const contentH = (maxR - minR + 1) * cSize + (maxR - minR) * gSize;
+            const contentW = (maxC - minC + 1) * cSize + (maxC - minC) * columnGapSize;
+            const contentH = (maxR - minR + 1) * cSize + (maxR - minR) * rowGapSize;
 
             const cloneContainer = document.createElement('div');
             cloneContainer.style.position = 'fixed';
@@ -4550,15 +4579,15 @@
                     const isCellSelected = draggedShape.indices.includes(curIdx);
                     const cellClone = createCloneCell(notes[curIdx], cSizeStr, isCellSelected);
                     cellClone.style.position = 'absolute';
-                    cellClone.style.left = `${(cl - minC) * (cSize + gSize) + PAD}px`;
-                    cellClone.style.top = `${(rl - minR) * (cSize + gSize) + PAD}px`;
+                    cellClone.style.left = `${(cl - minC) * (cSize + columnGapSize) + PAD}px`;
+                    cellClone.style.top = `${(rl - minR) * (cSize + rowGapSize) + PAD}px`;
                     cloneContainer.appendChild(cellClone);
                 }
             }
             document.body.appendChild(cloneContainer);
 
-            const offsetX = (c - minC) * (cSize + gSize) + cSize / 2 + PAD;
-            const offsetY = (r - minR) * (cSize + gSize) + cSize / 2 + PAD;
+            const offsetX = (c - minC) * (cSize + columnGapSize) + cSize / 2 + PAD;
+            const offsetY = (r - minR) * (cSize + rowGapSize) + cSize / 2 + PAD;
 
             e.dataTransfer.effectAllowed = 'copyMove'; e.dataTransfer.setData('text/plain', '');
 
@@ -5307,7 +5336,7 @@
 
         document.getElementById('btn-save').addEventListener('click', (e) => {
             e.stopPropagation(); closeContextMenu(); commitCurrentEdit();
-            const data = { cols: totalCols, rows: totalRows, totalCols, totalRows, notes, titleState, titleColorVersion: 2, pageColorIndex, appColorIndex: workspaceColorIndex, cellStyle, filterSettings: Array.from(filterStatusSet) };
+            const data = { cols: totalCols, rows: totalRows, totalCols, totalRows, columnGap, rowGap, notes, titleState, titleColorVersion: 2, pageColorIndex, appColorIndex: workspaceColorIndex, cellStyle, filterSettings: Array.from(filterStatusSet) };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
