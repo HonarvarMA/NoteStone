@@ -2353,7 +2353,7 @@
                 const c = canonicalStatus(item);
                 if (c && !result.includes(c)) result.push(c);
             });
-            return result;
+            return result.slice(0, 1);
         }
 
         function updateNoteStatusDisplay(index) {
@@ -3942,8 +3942,17 @@
             );
             const targets = JSON.parse(contextMenu.dataset.timerTargets || '[]').filter(index => notes[index]);
             targets.forEach(index => {
-                if (duration === 0) applyStatusTimer(notes[index], { statuses, dueAt });
-                else notes[index].statusTimer = { statuses, dueAt };
+                if (duration === 0) {
+                    applyStatusTimer(notes[index], { statuses, dueAt });
+                    return;
+                }
+                notes[index].statusTimer = { statuses, dueAt };
+                // Scheduling the status the note already has clears it until the timer fires
+                if (statuses.length > 0 && getNoteStatuses(notes[index])[0] === statuses[0]) {
+                    notes[index].statuses = [];
+                    notes[index].status = false;
+                    updateNoteStatusDisplay(index);
+                }
             });
             if (targets.length === 0) return false;
             saveData();
@@ -3990,7 +3999,7 @@
             if (targets.length === 0) {
                 html += `<div class="text-[10px] text-gray-500">Add a note to a selected cell to use a timer.</div>`;
             } else {
-                html += `<div class="text-[10px] leading-3 text-gray-500">Selected statuses replace the current ones.</div>
+                html += `<div class="text-[10px] leading-3 text-gray-500">The selected status replaces the current one.</div>
                 <div class="grid grid-cols-4 gap-1" role="group" aria-label="Statuses to apply">
                     ${statusOptions.map(([value, label, color]) => `<button type="button" class="timer-choice timer-status-choice" data-timer-status="${value}" aria-pressed="${initialStatuses.includes(value)}"><span class="timer-status-dot" style="background-color:${color}"></span>${label}</button>`).join('')}
                 </div>
@@ -4008,14 +4017,13 @@
 
             const form = document.getElementById('status-timer-form');
             if (form) {
-                const selectedStatuses = new Set(initialStatuses);
                 let selectedUnit = initialUnit;
                 form.querySelectorAll('[data-timer-status]').forEach(button => {
                     button.addEventListener('click', () => {
-                        const status = button.dataset.timerStatus;
-                        if (selectedStatuses.has(status)) selectedStatuses.delete(status);
-                        else selectedStatuses.add(status);
-                        button.setAttribute('aria-pressed', String(selectedStatuses.has(status)));
+                        const willSelect = button.getAttribute('aria-pressed') !== 'true';
+                        form.querySelectorAll('[data-timer-status]').forEach(other => {
+                            other.setAttribute('aria-pressed', String(willSelect && other === button));
+                        });
                     });
                 });
                 form.querySelectorAll('[data-timer-unit]').forEach(button => {
@@ -5637,12 +5645,7 @@
 
                 targets.forEach(targetIdx => {
                     if (!notes[targetIdx]) return;
-                    let cur = getNoteStatuses(notes[targetIdx]);
-                    if (shouldRemove) {
-                        cur = cur.filter(s => s !== canonical);
-                    } else {
-                        if (!cur.includes(canonical)) cur.push(canonical);
-                    }
+                    const cur = shouldRemove ? [] : [canonical];
                     notes[targetIdx].statuses = cur;
                     notes[targetIdx].status = cur[0] || false;
                     delete notes[targetIdx].blinking;
@@ -5675,9 +5678,8 @@
 
             saveData();
 
-            // Refresh open status menu in-place so checkmarks update immediately
             if (!contextMenu.classList.contains('hidden') && contextMenu.dataset.menuType === 'status') {
-                showStatusContextMenu(null, null, idx, activeStatusAnchor);
+                closeContextMenu();
             }
         };
         window.changeNoteStatus = window.toggleNoteStatus;
