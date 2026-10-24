@@ -2299,7 +2299,6 @@
         const iconFont = `<span class="font-serif font-bold text-sm pointer-events-none text-black" style="color: #000000;">Aa</span>`;
         // Status menu icon (flag)
         const iconStatus = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`;
-        const iconTimer = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2 2"></path><path d="M9 2h6"></path><path d="M12 2v3"></path></svg>`;
 
         const statusModes = ['single', 'double', 'triple', 'vertical', 'dashed', 'wave', 'zigzag', 'checkmark'];
         const statusClassNames = ['cell-status-single', 'cell-status-double', 'cell-status-triple', 'cell-status-vertical', 'cell-status-dashed', 'cell-status-wave', 'cell-status-zigzag', 'cell-status-checkmark', 'cell-status-urgent', 'cell-status-priority', 'cell-status-important', 'cell-status-attention', 'cell-status-hold', 'cell-status-waiting', 'cell-status-completed', 'cell-status-conundrum'];
@@ -3993,7 +3992,7 @@
 
             let html = `<form id="status-timer-form" class="menu-timer-container flex flex-col gap-2 text-sm text-gray-800">
                 <div class="flex items-center justify-between gap-2">
-                    <div class="font-semibold text-gray-900">Auto update status</div>
+                    <div class="font-semibold text-gray-900">Auto Status</div>
                     <div class="text-[10px] text-gray-500">${targetDescription}</div>
                 </div>`;
             if (targets.length === 0) {
@@ -4430,8 +4429,8 @@
             const timerBtn = document.createElement('div');
             timerBtn.className = btnBase;
             timerBtn.setAttribute('style', `${btnStyle}position:absolute;bottom:-14px;left:-14px;`);
-            timerBtn.title = 'Auto update status';
-            timerBtn.innerHTML = iconTimer;
+            timerBtn.title = 'Auto Status';
+            timerBtn.innerHTML = iconStatus;
             timerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 activeMenuIndex = anchorIdx;
@@ -4462,7 +4461,7 @@
             const statusBtn2 = document.createElement('div');
             statusBtn2.className = btnBase;
             statusBtn2.setAttribute('style', `${btnStyle}position:absolute;top:-14px;right:-14px;`);
-            statusBtn2.title = 'Change status';
+            statusBtn2.title = 'Auto Status';
             statusBtn2.innerHTML = iconStatus;
             statusBtn2.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -4470,7 +4469,7 @@
                 document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                 const cell = document.getElementById(`grid-cell-${anchorIdx}`);
                 if (cell) cell.classList.add('has-menu');
-                toggleStatusContextMenu(e.pageX, e.pageY, anchorIdx, statusBtn2);
+                toggleTimerContextMenu(e.pageX, e.pageY, anchorIdx, statusBtn2);
             });
             toolbar.appendChild(statusBtn2);
 
@@ -5258,13 +5257,13 @@
                                 toggleColorContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                             }, 'Change color'));
 
-                            // Bottom-Left: Auto update status
-                            const timerButton = createMenuButton('-bottom-2 -left-2 w-7 h-7', iconTimer, (e) => {
+                            // Bottom-Left: Auto Status
+                            const timerButton = createMenuButton('-bottom-2 -left-2 w-7 h-7', iconStatus, (e) => {
                                 activeMenuIndex = i;
                                 cell.classList.add('has-menu');
                                 note.text = inputContainer.innerText;
                                 toggleTimerContextMenu(e.pageX, e.pageY, i, e.currentTarget);
-                            }, 'Auto update status');
+                            }, 'Auto Status');
                             dragWrapper.appendChild(timerButton);
 
                             // Top-Left: Font Size
@@ -5303,13 +5302,13 @@
                                         toggleColorContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                                     }, 'Change color'));
 
-                                    // Bottom-Left: Auto update status
-                                    const timerButton = createMenuButton(`-bottom-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconTimer, (e) => {
+                                    // Bottom-Left: Auto Status
+                                    const timerButton = createMenuButton(`-bottom-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconStatus, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
                                         toggleTimerContextMenu(e.pageX, e.pageY, i, e.currentTarget);
-                                    }, 'Auto update status');
+                                    }, 'Auto Status');
                                     dragWrapper.appendChild(timerButton);
 
                                     // Top-Left: Font Size
