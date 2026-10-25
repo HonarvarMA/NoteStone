@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -38,8 +38,6 @@
             /* Space inside each cell around its stone. */
             --selected-stone-lift: 0px;
             --selected-stone-scale: 1.02;
-            --selection-ring-width: 3px;
-            /* calc(2.5px + (var(--grid-column-gap) + var(--grid-row-gap)) * 0.25 - var(--cell-size) * 0.01); */
             --cell-height: var(--cell-size);
             --cell-padding-top: 0px;
             --plate-extra-h: 0px;
@@ -175,8 +173,7 @@
         }
 
         /* ── Strike-through note styles (double line-through effect) ── */
-        .note-line-through,
-        .note-double-line-through {
+        .note-line-through {
             text-decoration: line-through double !important;
             text-decoration-line: line-through !important;
             text-decoration-style: double !important;
@@ -187,9 +184,7 @@
         }
 
         .note-white.note-line-through,
-        .note-white .note-line-through,
-        .note-white.note-double-line-through,
-        .note-white .note-double-line-through {
+        .note-white .note-line-through {
             text-decoration-color: #334155 !important;
         }
 
@@ -253,13 +248,49 @@
             backdrop-filter: blur(2px);
         }
 
-        .grid-cell.cell-status-normal .cell-underline-dock .underline-svg {
-            display: none !important;
+        .cell-timer-dock {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 72%;
+            max-width: calc(100% - 8px);
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            cursor: pointer;
+            z-index: 8;
+            box-sizing: border-box;
+            border-radius: 9999px;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+            color: #1e3a8a;
         }
 
-        .grid-cell .cell-underline-dock.has-status-timer {
+        .cell-timer-dock * {
+            pointer-events: none;
+        }
+
+        .cell-timer-dock svg {
+            width: 12px;
+            height: 12px;
+            flex: none;
+        }
+
+        .cell-timer-dock:not(.is-snoozed) > * {
+            visibility: hidden;
+        }
+
+        .grid-cell .cell-timer-dock.is-snoozed {
             background: #dbeafe;
             box-shadow: 0 1px 5px rgba(96, 165, 250, 0.55);
+        }
+
+        .grid-cell.cell-status-normal .cell-underline-dock .underline-svg {
+            display: none !important;
         }
 
         .underline-svg {
@@ -286,60 +317,11 @@
         }
 
         .note-filtered-out:hover .underline-svg,
+        .note-filtered-out.is-selected .underline-svg,
         .note-filtered-out.has-menu .underline-svg {
             opacity: 1 !important;
         }
 
-        /* Status Underlines */
-        .underline-triple {
-            color: #ef4444;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.45));
-        }
-
-        .underline-vertical {
-            color: #8b4513;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(139, 69, 19, 0.45));
-        }
-
-        .underline-double {
-            color: #f97316;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.45));
-        }
-
-        .underline-single {
-            color: #f59e0b;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
-        }
-
-        .underline-wave {
-            color: #d946ef;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(217, 70, 239, 0.45));
-        }
-
-        .underline-dashed {
-            color: #3b82f6;
-            opacity: 0.95;
-            filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.45));
-        }
-
-        .underline-checkmark {
-            color: #22c55e;
-            opacity: 0.95;
-            filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.7));
-        }
-
-        .underline-zigzag {
-            color: #4b5563;
-            opacity: 1;
-            filter: drop-shadow(0 0 2px rgba(75, 85, 99, 0.45));
-        }
-
-        /* Context Menus & Dropdown Styling */
         #context-menu {
             position: fixed !important;
             z-index: 1000 !important;
@@ -372,8 +354,7 @@
         #context-menu.menu-cell,
         #context-menu.menu-opacity-90,
         #context-menu[data-menu-type="status"],
-        #context-menu[data-menu-type="color"],
-        #context-menu[data-menu-type="font"] {
+        #context-menu[data-menu-type="color"] {
             opacity: 0.9 !important;
             background: rgba(255, 255, 255, 0.9) !important;
             background-color: rgba(255, 255, 255, 0.9) !important;
@@ -381,105 +362,17 @@
             -webkit-backdrop-filter: blur(12px) !important;
         }
 
-        #context-menu[data-menu-type="timer"] {
-            opacity: 0.98 !important;
-            background: rgba(255, 255, 255, 0.98) !important;
+        #context-menu[data-menu-type="status"],
+        #context-menu[data-menu-type="snooze"],
+        #context-menu[data-menu-type="font"] {
+            opacity: 1 !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
 
-        .menu-font-container {
-            min-width: 170px;
-            width: max-content;
-            padding: 8px 0;
-            box-sizing: border-box;
-        }
-
-        .menu-font-item {
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-
-        .menu-font-item:hover {
-            background-color: rgba(239, 246, 255, 0.9);
-        }
-
-        .menu-status-container {
-            min-width: 170px;
-            width: max-content;
-            padding: 8px 0;
-            box-sizing: border-box;
-        }
-
-        .menu-status-item {
-            padding: 7px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            font-size: 14px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background-color 0.15s ease, color 0.15s ease;
-        }
-
-        .menu-status-item:hover {
-            background-color: rgba(239, 246, 255, 0.9);
-        }
-
-        .menu-timer-container {
-            width: 218px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .timer-choice {
-            min-width: 0;
-            border: 1px solid #d1d5db;
-            border-radius: 5px;
-            background: #fff;
-            padding: 4px 2px;
-            color: #374151;
-            font-size: 10px;
-            line-height: 14px;
-            cursor: pointer;
-        }
-
-        .timer-choice[aria-pressed="true"] {
-            border-color: #3b82f6;
-            background: #eff6ff;
-            color: #1d4ed8;
-            font-weight: 600;
-        }
-
-        .timer-status-choice {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .timer-status-dot {
-            width: 7px;
-            height: 7px;
-            flex: 0 0 auto;
-            border-radius: 50%;
-        }
-
-        .menu-color-palette {
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(6, 26px);
-            gap: 8px;
-            width: max-content;
-            box-sizing: border-box;
-        }
-
+        .menu-font-container,
         .menu-filter-container {
             min-width: 175px;
             width: max-content;
@@ -487,6 +380,7 @@
             box-sizing: border-box;
         }
 
+        .menu-font-item,
         .menu-filter-item {
             padding: 7px 16px;
             display: flex;
@@ -499,81 +393,56 @@
             transition: background-color 0.15s ease, color 0.15s ease;
         }
 
+        .menu-font-item:hover,
         .menu-filter-item:hover {
             background-color: rgba(239, 246, 255, 0.9);
+        }
+
+        .menu-font-container {
+            min-width: 0;
+        }
+
+        .menu-font-item {
+            gap: 10px;
+        }
+
+        .menu-timer-container {
+            width: max-content;
+            padding: 12px 16px;
+            box-sizing: border-box;
+        }
+
+        .timer-choice {
+            min-width: 0;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #fff;
+            padding: 5px 8px;
+            color: #374151;
+            font-size: 12px;
+            line-height: 16px;
+            cursor: pointer;
+        }
+
+        .timer-choice[aria-pressed="true"] {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .menu-color-palette {
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(6, 26px);
+            gap: 8px;
+            width: max-content;
+            box-sizing: border-box;
         }
 
         .menu-panel-container {
             padding: 12px 16px;
             box-sizing: border-box;
-        }
-
-        /* ── TRASH target thumbtack styles & expanded drop zone ── */
-        #btn-trash,
-        #btn-trash-right {
-            position: relative;
-            overflow: visible !important;
-            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-
-        /* Expanded drop hitbox indicator pad (pseudo-element) */
-        #btn-trash::before,
-        #btn-trash-right::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0;
-            z-index: 10;
-            box-sizing: border-box;
-            transition: opacity 0.15s ease, background 0.15s ease;
-        }
-
-        /* Keep the trash icon visually quiet; the 24px target provides the drop area. */
-        #btn-trash::after,
-        #btn-trash-right::after {
-            display: none;
-        }
-
-        /* Active drag state: indicate the drop target without enlarging the icon. */
-        body.is-dragging-stone #btn-trash,
-        body.is-dragging-stone #btn-trash-right {
-            transform: none;
-            border-color: rgba(239, 68, 68, 0.45);
-            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18);
-        }
-
-        body.is-dragging-stone #btn-trash::before,
-        body.is-dragging-stone #btn-trash-right::before {
-            opacity: 1;
-            background: rgba(239, 68, 68, 0.08);
-        }
-
-        /* Keep the drop target subtle while a note is over it. */
-        #btn-trash.trash-drag-over,
-        #btn-trash-right.trash-drag-over {
-            background: rgba(239, 68, 68, 0.16) !important;
-            transform: none !important;
-            border-color: rgba(239, 68, 68, 0.55) !important;
-            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2) !important;
-        }
-
-        #btn-trash.trash-drag-over::before,
-        #btn-trash-right.trash-drag-over::before {
-            opacity: 1;
-            background: rgba(239, 68, 68, 0.12) !important;
-        }
-
-        #btn-trash:hover,
-        #btn-trash-right:hover,
-        #btn-trash:active,
-        #btn-trash-right:active {
-            transform: none;
         }
 
         .title-text-effect {
@@ -664,11 +533,7 @@
             animation: none !important;
         }
 
-        .note-filtered-out.is-selected .stone-wrapper {
-            opacity: 0.82;
-            filter: grayscale(35%);
-        }
-
+        .note-filtered-out.is-selected .stone-wrapper,
         .note-filtered-out.has-menu .stone-wrapper {
             opacity: 1 !important;
             filter: none !important;
@@ -682,7 +547,27 @@
             width: 12px;
             height: 12px;
             stroke-width: 2.5;
-            color: #22c55e;
+            color: #ffffff;
+        }
+
+        .thumbtack.sync-paused {
+            background: radial-gradient(circle at 35% 30%, #fde047 0%, #eab308 52%, #a16207 100%);
+            border-color: rgba(254, 240, 138, 0.9);
+        }
+
+        .thumbtack.sync-unsaved {
+            background: radial-gradient(circle at 35% 30%, #f87171 0%, #dc2626 52%, #991b1b 100%);
+            border-color: rgba(254, 202, 202, 0.9);
+        }
+
+        .thumbtack.sync-working {
+            background: radial-gradient(circle at 35% 30%, #3b82f6 0%, #1d4ed8 52%, #1e3a8a 100%);
+            border-color: rgba(147, 197, 253, 0.85);
+        }
+
+        .thumbtack.sync-ok {
+            background: radial-gradient(circle at 35% 30%, #4ade80 0%, #16a34a 52%, #166534 100%);
+            border-color: rgba(187, 247, 208, 0.9);
         }
 
         .title-menu-button {
@@ -756,46 +641,11 @@
         body.is-marquee-selecting .grid-cell.is-selected .stone-action-btn,
         body.has-window-selection .grid-cell .stone-action-btn,
         body.has-window-selection .grid-cell.is-selected .stone-action-btn,
-        .note-filtered-out:not(.has-menu):not(.is-selected) .stone-action-btn,
-        .is-capturing .stone-action-btn {
+        .note-filtered-out:not(.has-menu):not(.is-selected) .stone-action-btn {
             display: none !important;
             opacity: 0 !important;
             pointer-events: none !important;
             visibility: hidden !important;
-        }
-
-        #btn-trash-snackbar {
-            position: fixed;
-            background: rgba(30, 30, 30, 0.94);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 5px 12px;
-            border-radius: 8px;
-            pointer-events: none;
-            opacity: 0;
-            transform: translateY(-4px);
-            transition: opacity 0.18s ease, transform 0.18s ease;
-            z-index: 2000;
-            white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        #btn-trash-snackbar::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: var(--arrow-left, 50%);
-            transform: translateX(-50%);
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-bottom: 5px solid rgba(30, 30, 30, 0.94);
-        }
-
-        #btn-trash-snackbar.show {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .app-header {
@@ -2216,6 +2066,17 @@
                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
             </svg>
         </div>
+        <div id="btn-trash" class="thumbtack" title="Delete selected notes (or drop notes here)" role="button" tabindex="0"
+            aria-label="Delete notes">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+        </div>
         <div id="btn-info" class="thumbtack" title="About Tiny Notes" role="button" tabindex="0"
             aria-label="About Tiny Notes">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2249,6 +2110,17 @@
                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                 <polyline points="17 21 17 13 7 13 7 21"></polyline>
                 <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+        </div>
+
+        <div id="btn-sync" class="thumbtack" title="Sync with a file" role="button" tabindex="0"
+            aria-label="Sync with a file">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                <path d="M16 16h5v5"></path>
             </svg>
         </div>
 
@@ -2292,12 +2164,11 @@
     <script>
         // Icons - black on white
         const iconCheck = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        const iconCancel = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
         const iconEdit = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-        const iconTrash = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M3.5 5h1.5l2.2 14.8a2 2 0 0 0 2 1.7h5.6a2 2 0 0 0 2-1.7L19 5h1.5"></path><line x1="9" y1="10" x2="15" y2="16"></line><line x1="15" y1="10" x2="9" y2="16"></line></svg>`;
         const iconPalette = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><circle cx="13.5" cy="6.5" r=".5" fill="#000000"></circle><circle cx="17.5" cy="10.5" r=".5" fill="#000000"></circle><circle cx="8.5" cy="7.5" r=".5" fill="#000000"></circle><circle cx="6.5" cy="12.5" r=".5" fill="#000000"></circle><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.53-.21-1.04-.59-1.41C13.54 17.72 13.38 17.2 13.53 16.66 13.82 15.65 14.81 15 15.92 15H17c2.76 0 5-2.76 5-5 0-4.42-4.48-8-10-8z"></path></svg>`;
         const iconFont = `<span class="font-serif font-bold text-sm pointer-events-none text-black" style="color: #000000;">Aa</span>`;
         // Status menu icon (flag)
+        const iconSnooze = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="2" x2="14" y2="2"></line><line x1="12" y1="14" x2="15" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg>`;
         const iconStatus = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`;
 
         const statusModes = ['single', 'double', 'triple', 'vertical', 'dashed', 'wave', 'zigzag', 'checkmark'];
@@ -2315,23 +2186,6 @@
             if (str === 'zigzag' || str === 'conundrum') return 'zigzag';
             if (str === 'checkmark' || str === 'completed' || str === 'done' || str === 'linethrough') return 'checkmark';
             return statusModes.includes(str) ? str : null;
-        }
-
-        function normalizeStatusTimer(timer) {
-            if (!timer || typeof timer !== 'object' || Array.isArray(timer)) return null;
-            if (!Number.isSafeInteger(timer.dueAt) || timer.dueAt <= 0) return null;
-            if (Array.isArray(timer.statuses)) {
-                return {
-                    statuses: getNoteStatuses(timer.statuses),
-                    dueAt: timer.dueAt
-                };
-            }
-            if (timer.action === 'set' || timer.action === 'clear') {
-                const status = canonicalStatus(timer.status);
-                if (timer.action === 'set' && !status) return null;
-                return { statuses: timer.action === 'set' ? [status] : [], dueAt: timer.dueAt };
-            }
-            return null;
         }
 
         function getNoteStatuses(noteOrStatuses) {
@@ -2387,12 +2241,12 @@
             const isMulti = count > 1;
             let paths = '';
 
-            // 1. Zigzag (dark slate #4b5563) - lower track
+            // 1. Zigzag (indigo #6366f1) - lower track
             if (hasZigzag) {
                 if (!isMulti) {
-                    paths += `<path d="M 5 5.5 L 11.3 12.5 L 17.6 5.5 L 23.9 12.5 L 30.1 5.5 L 36.4 12.5 L 42.7 5.5 L 49 12.5" fill="none" stroke="#4b5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+                    paths += `<path d="M 5 5.5 L 11.3 12.5 L 17.6 5.5 L 23.9 12.5 L 30.1 5.5 L 36.4 12.5 L 42.7 5.5 L 49 12.5" fill="none" stroke="#6366f1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
                 } else {
-                    paths += `<path d="M 5 9.5 L 11.3 16.2 L 17.6 9.5 L 23.9 16.2 L 30.1 9.5 L 36.4 16.2 L 42.7 9.5 L 49 16.2" fill="none" stroke="#4b5563" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>`;
+                    paths += `<path d="M 5 9.5 L 11.3 16.2 L 17.6 9.5 L 23.9 16.2 L 30.1 9.5 L 36.4 16.2 L 42.7 9.5 L 49 16.2" fill="none" stroke="#6366f1" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>`;
                 }
             }
 
@@ -2556,13 +2410,7 @@
             'text-gray-800': '#1f2937'
         };
 
-        function getTitleColorHex() {
-            if (typeof titleState === 'undefined' || !titleState) return '#1f2937';
-            const cls = titleColors[titleState.colorIndex] || titleColors[0];
-            return titleColorValues[cls] || '#1f2937';
-        }
-        // Trash bin icon for the header thumbtack (larger version)
-        const iconTrashBin = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h1.5l2.2 14.8a2 2 0 0 0 2 1.7h5.6a2 2 0 0 0 2-1.7L19 5h1.5"></path><line x1="9" y1="10" x2="15" y2="16"></line><line x1="15" y1="10" x2="9" y2="16"></line></svg>`;
+        const iconTrashBin = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
         // 12 Refined Neutral & Classic Colors for Note Board & Web Page
         const pageColors = [
             '#ffffff', // Pure White
@@ -2586,9 +2434,6 @@
 
         const workspaceColors = pageColors;
         const workspaceColorNames = pageColorNames;
-        const backgroundColors = pageColors;
-        const backgroundColorNames = pageColorNames;
-        const backgroundColorPaletteOrder = pageColors.map((_, idx) => idx);
         const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-400', 'bg-gray-500', 'note-stone-gray', 'bg-zinc-900', 'note-white'];
         const noteColorNames = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'Gray', 'Stone Gray', 'Dark Charcoal', 'White'];
         const fontSizes = ['tiny', 'fine', 'small', 'medium', 'large', 'huge', 'giant'];
@@ -2605,7 +2450,7 @@
         let cellStyle = 'game'; // 'game' | 'natural' | 'traffic'
         let titleState = { text: "Tiny Notes", colorIndex: 4, fontIndex: 4, isMenuOpen: false, isEditing: false };
 
-        const ALL_STATUS_FILTERS = [false, 'wave', 'dashed', 'checkmark', 'single', 'double', 'triple', 'vertical', 'zigzag'];
+        const ALL_STATUS_FILTERS = [false, 'wave', 'zigzag', 'dashed', 'checkmark', 'single', 'double', 'triple', 'vertical'];
         const filterStatusSet = new Set(ALL_STATUS_FILTERS);
 
         function isFilterActive() {
@@ -2654,11 +2499,9 @@
             suppressedMarqueeClickUntil = Date.now() + 150;
             document.documentElement.classList.remove('is-dragging-stone');
             document.body.classList.remove('is-dragging-stone');
-            if (typeof btnTrash !== 'undefined' && btnTrash) btnTrash.classList.remove('trash-drag-over');
-            if (typeof btnTrashRight !== 'undefined' && btnTrashRight) btnTrashRight.classList.remove('trash-drag-over');
             document.querySelectorAll('.stone-wrapper.dragging, .grid-cell.dragging').forEach(el => el.classList.remove('dragging'));
             document.querySelectorAll('.grid-cell > *').forEach(el => {
-                if (!el.classList.contains('drop-indicator') && !el.classList.contains('cell-plate-surface') && !el.classList.contains('cell-underline-dock')) {
+                if (!el.classList.contains('drop-indicator') && !el.classList.contains('cell-plate-surface') && !el.classList.contains('cell-underline-dock') && !el.classList.contains('cell-timer-dock')) {
                     el.classList.remove('pointer-events-none');
                 }
             });
@@ -2694,7 +2537,6 @@
         let currentDropDir = null;
         let currentDropAnchor = null;
         let windowSelection = null;
-        let suppressedMarqueeClick = null;
 
         let isCapturingScreenshot = false;
 
@@ -2709,118 +2551,28 @@
         headerRow.className = 'app-header';
         leftControls.className = 'header-controls';
         rightControls.className = 'header-controls header-controls-right';
-        // Build the trash thumbtacks (left and right)
-        function createTrashButton(id) {
-            const btn = document.createElement('div');
-            btn.id = id;
-            btn.className = 'thumbtack';
-            btn.title = 'Drop notes here to delete';
-            btn.setAttribute('role', 'button');
-            btn.setAttribute('tabindex', '0');
-            btn.setAttribute('aria-label', 'Drop notes here to delete');
-            btn.innerHTML = iconTrashBin;
-            const svg = btn.querySelector('svg');
-            if (svg) {
-                svg.style.cssText = 'width:12px;height:12px;stroke-width:2;color:#ef4444;pointer-events:none;transition:transform 0.15s ease, color 0.15s ease;';
-            }
-            return btn;
-        }
-
-        const btnTrash = createTrashButton('btn-trash');
-        const btnTrashRight = createTrashButton('btn-trash-right');
-
-        // Bin is 5th on left; matching bin added on right side next to title
         leftControls.append(
             document.getElementById('btn-grid'),
             document.getElementById('btn-colors'),
             document.getElementById('btn-note-style'),
             document.getElementById('btn-filter'),
-            btnTrash
+            document.getElementById('btn-trash')
         );
 
         rightControls.append(
-            btnTrashRight,
             document.getElementById('btn-load'),
             document.getElementById('btn-save'),
+            document.getElementById('btn-sync'),
             document.getElementById('btn-camera'),
             document.getElementById('btn-info')
         );
         headerRow.append(leftControls, titleContainer, rightControls);
         workspace.insertBefore(headerRow, gridElement);
 
-        // Drag-to-delete: highlight trash when dragging a note
         function applyStyleSettings() {
             document.body.classList.toggle('style-natural', cellStyle === 'natural');
             document.body.classList.toggle('style-traffic', cellStyle === 'traffic');
         }
-
-        // Snackbar / tooltip for trash button click hint
-        const trashSnackbar = document.createElement('div');
-        trashSnackbar.id = 'btn-trash-snackbar';
-        trashSnackbar.textContent = '🗑️ Drop notes here to delete';
-        document.body.appendChild(trashSnackbar);
-        let trashSnackbarTimer = null;
-
-        function showTrashSnackbar(targetBtn) {
-            trashSnackbar.classList.add('show');
-            const rect = targetBtn.getBoundingClientRect();
-            const tipRect = trashSnackbar.getBoundingClientRect();
-            let left = rect.left + rect.width / 2 - tipRect.width / 2;
-            left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
-            trashSnackbar.style.left = `${left}px`;
-            trashSnackbar.style.top = `${rect.bottom + 8}px`;
-            const arrowLeft = (rect.left + rect.width / 2) - left;
-            trashSnackbar.style.setProperty('--arrow-left', `${arrowLeft}px`);
-
-            clearTimeout(trashSnackbarTimer);
-            trashSnackbarTimer = setTimeout(() => trashSnackbar.classList.remove('show'), 2200);
-        }
-
-        [btnTrash, btnTrashRight].forEach(trashBtn => {
-            trashBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showTrashSnackbar(trashBtn);
-            });
-
-            trashBtn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    trashBtn.click();
-                }
-            });
-
-            trashBtn.addEventListener('dragenter', (e) => {
-                if (draggedIndex === null && !draggedShape) return;
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                trashBtn.classList.add('trash-drag-over');
-            });
-
-            trashBtn.addEventListener('dragover', (e) => {
-                if (draggedIndex === null && !draggedShape) return;
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                trashBtn.classList.add('trash-drag-over');
-            });
-
-            trashBtn.addEventListener('dragleave', (e) => {
-                if (e.relatedTarget && trashBtn.contains(e.relatedTarget)) return;
-                trashBtn.classList.remove('trash-drag-over');
-            });
-
-            trashBtn.addEventListener('drop', (e) => {
-                e.preventDefault();
-                trashBtn.classList.remove('trash-drag-over');
-                if (draggedShape) {
-                    draggedShape.indices.forEach(idx => { notes[idx] = null; });
-                    draggedShape = null; selectedNotes.clear(); activeMenuIndex = null;
-                } else if (draggedIndex !== null) {
-                    notes[draggedIndex] = null;
-                    draggedIndex = null; selectedNotes.clear(); activeMenuIndex = null;
-                }
-                saveData(); renderGrid();
-            });
-        });
 
         let lastFullViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
@@ -2969,9 +2721,7 @@
             notes = data.notes;
             notes.forEach(n => {
                 if (n) {
-                    const statusTimer = normalizeStatusTimer(n.statusTimer);
-                    if (statusTimer) n.statusTimer = statusTimer;
-                    else delete n.statusTimer;
+                    delete n.statusTimer;
                     if (n.opacity !== undefined) delete n.opacity;
                     if (n.blinking && !n.status) n.status = n.blinking;
                     if (n.status === 'completed' || n.status === 'done' || n.status === 'linethrough') {
@@ -3041,28 +2791,268 @@
             workspace.style.setProperty('--workspace-background', workspaceColors[workspaceColorIndex] || workspaceColors[0]);
         }
 
-        let statusTimerTimeout = null;
+        let snoozeExpiryTimeout = null;
 
+        function getSaveObject() {
+            return {
+                cols: totalCols,
+                rows: totalRows,
+                totalCols,
+                totalRows,
+                columnGap,
+                rowGap,
+                notes,
+                titleState,
+                titleColorVersion: 2,
+                pageColorIndex,
+                appColorIndex: workspaceColorIndex,
+                cellStyle,
+                filterSettings: Array.from(filterStatusSet)
+            };
+        }
+
+        const LOCAL_MODIFIED_KEY = 'tinyNotesLocalModified';
+        const formatSyncTime = (ms) => ms ? new Date(ms).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'unknown';
+        const getLocalModified = () => Number(localStorage.getItem(LOCAL_MODIFIED_KEY)) || 0;
+        const hasLocalNotes = () => notes.some(Boolean);
+
+        let syncFileHandle = null;
+        let syncWriteTimer = null;
+        let syncChain = Promise.resolve();
+        let syncKnownModified = 0;
+        let syncDirty = false;
+        let syncPollTimer = null;
+        let syncPaused = false;
+        let syncUnsaved = false;
+
+        // yellow = paused after reload, red = edited while paused, blue = writing, green = in sync
+        function updateSyncIndicator() {
+            const btn = document.getElementById('btn-sync');
+            if (!btn) return;
+            const state = syncFileHandle ? (syncDirty ? 'working' : 'ok') : (syncPaused ? (syncUnsaved ? 'unsaved' : 'paused') : '');
+            ['paused', 'unsaved', 'working', 'ok'].forEach(s => btn.classList.toggle('sync-' + s, s === state));
+        }
+
+        function runSyncTask(task) {
+            syncChain = syncChain.then(task).catch((err) => {
+                if (syncFileHandle) {
+                    setSyncHandle(null);
+                    alert('Syncing stopped: the file could not be accessed.');
+                }
+            });
+            return syncChain;
+        }
+
+        function scheduleSyncWrite() {
+            if (!syncFileHandle) return;
+            syncDirty = true;
+            updateSyncIndicator();
+            clearTimeout(syncWriteTimer);
+            syncWriteTimer = setTimeout(() => runSyncTask(syncWithFile), 400);
+        }
+
+        async function writeSyncFile(handle) {
+            const writable = await handle.createWritable();
+            await writable.write(JSON.stringify(getSaveObject()));
+            await writable.close();
+            syncKnownModified = (await handle.getFile()).lastModified;
+            syncDirty = false;
+            updateSyncIndicator();
+        }
+
+        function applySyncedText(text) {
+            const data = normalizeImportedData(JSON.parse(text));
+            const wasSyncing = syncFileHandle;
+            syncFileHandle = null;
+            applyLoadedData(data);
+            editingIndex = null;
+            activeMenuIndex = null;
+            selectedNotes.clear();
+            resetNoteFilter();
+            saveData(); resizeGrid(); renderTitle(); renderGrid();
+            syncFileHandle = wasSyncing;
+            syncDirty = false;
+            updateSyncIndicator();
+        }
+
+        // Two-way step: pull the file if it changed elsewhere, push local changes otherwise
+        async function syncWithFile() {
+            const handle = syncFileHandle;
+            if (!handle || editingIndex !== null || titleState.isEditing) return;
+            const file = await handle.getFile();
+            if (file.lastModified > syncKnownModified) {
+                let text = '';
+                let valid = false;
+                try { text = await file.text(); JSON.parse(text); valid = true; } catch (e) { }
+                if (valid) {
+                    const useFile = !syncDirty || window.confirm(`The sync file was changed elsewhere and you also have unsynced changes here.\n\nFile changed: ${formatSyncTime(file.lastModified)}\nYour changes: ${formatSyncTime(getLocalModified())}\n\nOK = use the file version (discard my changes)\nCancel = keep my version (overwrite the file)`);
+                    if (useFile) {
+                        syncKnownModified = file.lastModified;
+                        applySyncedText(text);
+                        return;
+                    }
+                }
+                await writeSyncFile(handle);
+            } else if (syncDirty) {
+                await writeSyncFile(handle);
+            }
+        }
+
+        function setSyncHandle(handle) {
+            syncFileHandle = handle;
+            clearInterval(syncPollTimer);
+            syncPollTimer = null;
+            syncDirty = false;
+            syncPaused = false;
+            syncUnsaved = false;
+            const btn = document.getElementById('btn-sync');
+            btn.title = handle ? `Syncing with ${handle.name} (click to stop)` : 'Sync with a file';
+            if (handle) syncPollTimer = setInterval(() => runSyncTask(syncWithFile), 4000);
+            updateSyncIndicator();
+        }
+
+        const SYNC_PICKER_TYPES = [{ description: 'Tiny Notes file', accept: { 'application/json': ['.json'] } }];
+        let rememberedSyncHandle = null;
+
+        function openSyncDb() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('tinyNotesSync', 1);
+                request.onupgradeneeded = () => request.result.createObjectStore('handles');
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function storeSyncHandle(handle) {
+            try {
+                const db = await openSyncDb();
+                await new Promise((resolve, reject) => {
+                    const tx = db.transaction('handles', 'readwrite');
+                    if (handle) tx.objectStore('handles').put(handle, 'file');
+                    else tx.objectStore('handles').delete('file');
+                    tx.oncomplete = resolve;
+                    tx.onerror = () => reject(tx.error);
+                });
+                db.close();
+            } catch (e) { }
+        }
+
+        async function loadStoredSyncHandle() {
+            try {
+                const db = await openSyncDb();
+                const handle = await new Promise((resolve, reject) => {
+                    const request = db.transaction('handles').objectStore('handles').get('file');
+                    request.onsuccess = () => resolve(request.result || null);
+                    request.onerror = () => reject(request.error);
+                });
+                db.close();
+                return handle;
+            } catch (e) { return null; }
+        }
+
+        function stopFileSync() {
+            setSyncHandle(null);
+            rememberedSyncHandle = null;
+            storeSyncHandle(null);
+        }
+
+        // Loads the file first; local data is only written over it when the user chooses so
+        async function beginSyncWithHandle(handle, isNewFile = false) {
+            const file = await handle.getFile();
+            let text = '';
+            let valid = false;
+            if (file.size > 0) {
+                try { text = await file.text(); JSON.parse(text); valid = true; } catch (e) { }
+                if (!valid && !window.confirm('This file is not a Tiny Notes file. Overwrite it with the current board?')) return;
+            }
+            let loadFile = valid && !isNewFile;
+            if (loadFile && hasLocalNotes() && getLocalModified() > file.lastModified
+                && JSON.stringify(JSON.parse(text)) !== JSON.stringify(getSaveObject())) {
+                loadFile = window.confirm(`This board has changes that are not in the file.\n\nFile changed: ${formatSyncTime(file.lastModified)}\nYour changes: ${formatSyncTime(getLocalModified())}\n\nOK = load the file (discard my changes)\nCancel = keep my board and overwrite the file`);
+            }
+            rememberedSyncHandle = handle;
+            storeSyncHandle(handle);
+            setSyncHandle(handle);
+            await runSyncTask(async () => {
+                if (loadFile) {
+                    syncKnownModified = file.lastModified;
+                    applySyncedText(text);
+                } else {
+                    await writeSyncFile(handle);
+                }
+            });
+        }
+
+        async function chooseSyncFile(mode) {
+            try {
+                if (mode === 'new') {
+                    const handle = await window.showSaveFilePicker({ suggestedName: 'TinyNotes.json', types: SYNC_PICKER_TYPES });
+                    await beginSyncWithHandle(handle, true);
+                } else {
+                    // The save picker empties an existing file, so existing files use the open picker
+                    const [handle] = await window.showOpenFilePicker({ types: SYNC_PICKER_TYPES });
+                    if (await handle.requestPermission({ mode: 'readwrite' }) !== 'granted') return;
+                    await beginSyncWithHandle(handle);
+                }
+            } catch (err) { /* picker cancelled */ }
+        }
+
+        async function resumeRememberedSync() {
+            try {
+                const handle = rememberedSyncHandle;
+                if (!handle || await handle.requestPermission({ mode: 'readwrite' }) !== 'granted') return;
+                await beginSyncWithHandle(handle);
+            } catch (err) { stopFileSync(); }
+        }
+
+        function showSyncMenu(anchorElement) {
+            activeHeaderMenu = 'sync';
+            contextMenu.dataset.menuType = 'sync';
+            contextMenu.classList.remove('menu-opacity-90', 'menu-cell');
+            contextMenu.classList.add('menu-thumbtack');
+            contextMenu.style.opacity = '1';
+            contextMenu.style.backgroundColor = '#ffffff';
+            const items = [];
+            if (rememberedSyncHandle) items.push({ label: `Resume with ${rememberedSyncHandle.name}`, action: resumeRememberedSync });
+            if (window.showOpenFilePicker) items.push({ label: 'Choose existing file…', action: () => chooseSyncFile('existing') });
+            if (window.showSaveFilePicker) items.push({ label: 'Create new file…', action: () => chooseSyncFile('new') });
+            contextMenu.innerHTML = `<div class="menu-filter-container select-none"></div>`;
+            const container = contextMenu.firstChild;
+            items.forEach(({ label, action }) => {
+                const item = document.createElement('div');
+                item.className = 'menu-filter-item text-gray-800';
+                item.textContent = label;
+                item.addEventListener('click', () => { closeContextMenu(); action(); });
+                container.appendChild(item);
+            });
+            positionMenu(0, 0, anchorElement);
+        }
+
+        async function restoreSyncOnStartup() {
+            if (!window.showOpenFilePicker) return;
+            const handle = await loadStoredSyncHandle();
+            if (!handle) return;
+            rememberedSyncHandle = handle;
+            syncPaused = true;
+            updateSyncIndicator();
+            document.getElementById('btn-sync').title = `Sync paused - click to resume with ${handle.name}`;
+            try {
+                if (await handle.queryPermission({ mode: 'readwrite' }) === 'granted') await beginSyncWithHandle(handle);
+            } catch (e) { }
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && syncFileHandle) runSyncTask(syncWithFile);
+        });
+        window.addEventListener('focus', () => { if (syncFileHandle) runSyncTask(syncWithFile); });
         function saveData() {
             try {
-                const data = {
-                    cols: totalCols,
-                    rows: totalRows,
-                    totalCols,
-                    totalRows,
-                    columnGap,
-                    rowGap,
-                    notes,
-                    titleState,
-                    titleColorVersion: 2,
-                    pageColorIndex,
-                    appColorIndex: workspaceColorIndex,
-                    cellStyle,
-                    filterSettings: Array.from(filterStatusSet)
-                };
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+                const json = JSON.stringify(getSaveObject());
+                if (json !== localStorage.getItem(LOCAL_STORAGE_KEY)) localStorage.setItem(LOCAL_MODIFIED_KEY, String(Date.now()));
+                localStorage.setItem(LOCAL_STORAGE_KEY, json);
             } catch (e) { }
-            scheduleStatusTimers();
+            if (syncPaused && !syncUnsaved) { syncUnsaved = true; updateSyncIndicator(); }
+            scheduleSyncWrite();
+            scheduleSnoozeExpiry();
         }
 
 
@@ -3215,6 +3205,10 @@
         let activeMenuPosState = null;
 
         function getActiveMenuStoneRect(anchorElement = null) {
+            if (anchorElement && anchorElement.closest && anchorElement.closest('#group-action-toolbar')) {
+                const box = document.getElementById('multi-cell-selection-box');
+                if (box) return box.getBoundingClientRect();
+            }
             if (anchorElement && anchorElement.closest) {
                 const cell = anchorElement.closest('.grid-cell');
                 const circle = cell?.querySelector('.stone-effect') || cell?.querySelector('.stone-wrapper');
@@ -3415,7 +3409,7 @@
         }
 
         function closeContextMenu() {
-            if (commitAutoUpdateStatusMenu() === null) return false;
+            if (commitSnoozeMenu() === null) return false;
             cancelMenuClose();
             if (activeMenuResizeObserver) {
                 activeMenuResizeObserver.disconnect();
@@ -3437,7 +3431,8 @@
             contextMenu.style.top = '0px';
             delete contextMenu.dataset.menuType;
             delete contextMenu.dataset.noteIndex;
-            delete contextMenu.dataset.timerTargets;
+            delete contextMenu.dataset.snoozeTargets;
+            delete contextMenu.dataset.snoozeInitial;
             document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
             if (activeMenuIndex !== null && !selectedNotes.has(activeMenuIndex) && editingIndex === null) {
                 activeMenuIndex = null;
@@ -3741,6 +3736,7 @@
 
         function isNoteMatchingFilter(note) {
             if (!note) return false;
+            if (getNoteSnoozeUntil(note)) return false;
             if (!isFilterActive()) return true;
             const statuses = getNoteStatuses(note);
             if (statuses.length === 0) {
@@ -3751,18 +3747,6 @@
 
         window.resetNoteFilter = function () {
             ALL_STATUS_FILTERS.forEach(b => filterStatusSet.add(b));
-            updateFilterButtonState();
-            saveData();
-            renderGrid();
-        };
-
-        window.toggleShowAllFilter = function () {
-            if (!isFilterActive()) {
-                filterStatusSet.clear();
-            } else {
-                window.resetNoteFilter();
-                return;
-            }
             updateFilterButtonState();
             saveData();
             renderGrid();
@@ -3794,13 +3778,13 @@
             const statusItems = [
                 { id: false, name: 'None', color: '#ffffff', dotBorder: 'border-gray-400' },
                 { id: 'wave', name: 'Wave', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
+                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', dotBorder: 'border-indigo-300' },
                 { id: 'dashed', name: 'Dashed', color: '#3b82f6', dotBorder: 'border-blue-300' },
                 { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', dotBorder: 'border-amber-300' },
                 { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
                 { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
-                { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' },
-                { id: 'zigzag', name: 'Zigzag', color: '#4b5563', dotBorder: 'border-gray-500' }
+                { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' }
             ];
 
             statusItems.forEach(item => {
@@ -3854,6 +3838,110 @@
             }
         }
 
+        function getSelectionTargets(noteIndex) {
+            const indices = selectedNotes.has(noteIndex) && selectedNotes.size > 1
+                ? Array.from(selectedNotes)
+                : [noteIndex];
+            return indices.filter(index => notes[index]);
+        }
+
+        function getNoteSnoozeUntil(note) {
+            const until = note && note.snoozeUntil;
+            return Number.isSafeInteger(until) && until > Date.now() ? until : 0;
+        }
+
+        // Day timers end at local midnight, so they land exactly on a 00:00 boundary
+        function isMidnight(ms) {
+            const d = new Date(ms);
+            return d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0 && d.getMilliseconds() === 0;
+        }
+
+        function getSnoozeDays(until) {
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
+            return Math.round((until - startOfToday.getTime()) / 86400000);
+        }
+
+        function getSnoozeEnd(duration, unit) {
+            if (unit === 'days') {
+                const end = new Date();
+                end.setHours(0, 0, 0, 0);
+                end.setDate(end.getDate() + duration);
+                return end.getTime();
+            }
+            return Date.now() + duration * 3600000;
+        }
+
+        function getSnoozeUnit(until) {
+            return until && isMidnight(until) ? 'days' : 'hours';
+        }
+
+        function formatSnoozeBadge(until) {
+            return getSnoozeUnit(until) === 'days'
+                ? `${getSnoozeDays(until)}d`
+                : `${Math.max(1, Math.ceil((until - Date.now()) / 3600000))}h`;
+        }
+
+        function getLastSnoozeUnit() {
+            return localStorage.getItem('tinyNotesSnoozeUnit') === 'days' ? 'days' : 'hours';
+        }
+
+        function updateSnoozeDock(dock, noteIndex) {
+            const until = getNoteSnoozeUntil(notes[noteIndex]);
+            dock.classList.toggle('is-snoozed', until > 0);
+            if (until) {
+                const badge = formatSnoozeBadge(until);
+                dock.innerHTML = `${iconSnooze}<span>${badge}</span>`;
+                const endDate = new Date(until);
+                const endDay = endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                dock.title = `Ends at ${endDay} ${endTime} (in ${badge})`;
+            } else {
+                dock.innerHTML = iconSnooze;
+                dock.title = 'Dim timer';
+            }
+        }
+
+        function refreshSnoozeDocks() {
+            document.querySelectorAll('.cell-timer-dock[data-note-index]').forEach(dock => {
+                updateSnoozeDock(dock, Number(dock.dataset.noteIndex));
+            });
+        }
+
+        const statusCycle = [false, 'single', 'double', 'triple', 'vertical', 'wave', 'zigzag', 'dashed', 'checkmark'];
+
+        function setNoteStatus(index, status) {
+            const note = notes[index];
+            if (!note) return;
+            note.statuses = status ? [status] : [];
+            note.status = status;
+            delete note.blinking;
+            delete note.strike;
+            delete note.xMark;
+            updateNoteStatusDisplay(index);
+        }
+
+        function cycleNoteStatus(noteIndex) {
+            if (!notes[noteIndex]) return;
+            const current = getNoteStatuses(notes[noteIndex])[0] || false;
+            const next = statusCycle[(statusCycle.indexOf(current) + 1) % statusCycle.length];
+            getSelectionTargets(noteIndex).forEach(index => setNoteStatus(index, next));
+            saveData();
+        }
+
+        function deleteNote(index, currentText) {
+            closeContextMenu();
+            const text = (currentText ?? notes[index]?.text ?? '').trim();
+            const preview = text.length > 120 ? `${text.slice(0, 120)}…` : text;
+            if (!window.confirm(`Delete this note?\n\n${preview || '(empty note)'}`)) return;
+            notes[index] = null;
+            selectedNotes.clear();
+            activeMenuIndex = null;
+            editingIndex = null;
+            saveData();
+            renderGrid();
+        }
+
         function toggleStatusContextMenu(x, y, noteIndex, anchorElement = null) {
             if (isContextMenuOpenFor('status', noteIndex)) {
                 closeContextMenu();
@@ -3862,232 +3950,176 @@
             }
         }
 
-        function toggleTimerContextMenu(x, y, noteIndex, anchorElement = null) {
-            if (isContextMenuOpenFor('timer', noteIndex)) {
-                closeContextMenu();
-            } else if (closeContextMenu()) {
-                showTimerContextMenu(x, y, noteIndex, anchorElement);
-            }
-        }
-
-        function getStatusTimerTargets(noteIndex) {
-            const indices = selectedNotes.has(noteIndex) && selectedNotes.size > 1
-                ? Array.from(selectedNotes)
-                : [noteIndex];
-            return indices.filter(index => notes[index]);
-        }
-
-        function formatTimerRemaining(ms) {
-            const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
-            const days = Math.floor(totalMinutes / 1440);
-            if (days >= 1) return `in ${days} ${days === 1 ? 'day' : 'days'}`;
-            const hours = Math.floor(totalMinutes / 60);
-            const minutes = totalMinutes % 60;
-            const parts = [];
-            if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-            if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-            return `in ${parts.join(' and ')}`;
-        }
-
-        function getStatusTimerTooltip(noteIndex) {
-            const timer = notes[noteIndex] && normalizeStatusTimer(notes[noteIndex].statusTimer);
-            if (!timer) return '';
-            const statuses = timer.statuses.length > 0
-                ? timer.statuses.map(status => `${status.charAt(0).toUpperCase()}${status.slice(1)}`).join(', ')
-                : 'None';
-            return `Status will change ${formatTimerRemaining(timer.dueAt - Date.now())} to: ${statuses}`;
-        }
-
-        function updateStatusTimerDock(dock, noteIndex) {
-            const tooltip = getStatusTimerTooltip(noteIndex);
-            dock.classList.toggle('has-status-timer', tooltip !== '');
-            if (tooltip) dock.title = tooltip;
-            else dock.removeAttribute('title');
-        }
-
-        function refreshStatusTimerButtons() {
-            document.querySelectorAll('.cell-underline-dock[data-note-index]').forEach(dock => {
-                updateStatusTimerDock(dock, Number(dock.dataset.noteIndex));
-            });
-        }
-
-        function commitAutoUpdateStatusMenu() {
-            if (contextMenu.dataset.menuType !== 'timer') return false;
-            const durationInput = document.getElementById('status-timer-duration');
-            if (!durationInput) return false;
-
-            const duration = durationInput.valueAsNumber;
-            if (!Number.isSafeInteger(duration) || duration < 0) {
-                durationInput.setCustomValidity('Enter a whole number that is zero or greater.');
-                durationInput.reportValidity();
-                return null;
-            }
-            durationInput.setCustomValidity('');
-
-            const selectedUnit = contextMenu.querySelector('[data-timer-unit][aria-pressed="true"]')?.dataset.timerUnit;
-            if (selectedUnit !== 'hours' && selectedUnit !== 'days') {
-                throw new Error('Select a valid auto-update time unit.');
-            }
-            const delay = duration * (selectedUnit === 'days' ? 86400000 : 3600000);
-            const dueAt = Date.now() + delay;
-            if (!Number.isSafeInteger(dueAt) || dueAt > 8640000000000000) {
-                durationInput.setCustomValidity('The selected duration is too large.');
-                durationInput.reportValidity();
-                return null;
-            }
-
-            const statuses = statusModes.filter(status =>
-                contextMenu.querySelector(`[data-timer-status="${status}"]`)?.getAttribute('aria-pressed') === 'true'
-            );
-            const targets = JSON.parse(contextMenu.dataset.timerTargets || '[]').filter(index => notes[index]);
-            targets.forEach(index => {
-                if (duration === 0) {
-                    applyStatusTimer(notes[index], { statuses, dueAt });
-                    return;
-                }
-                notes[index].statusTimer = { statuses, dueAt };
-                // Scheduling the status the note already has clears it until the timer fires
-                if (statuses.length > 0 && getNoteStatuses(notes[index])[0] === statuses[0]) {
-                    notes[index].statuses = [];
-                    notes[index].status = false;
-                    updateNoteStatusDisplay(index);
-                }
-            });
-            if (targets.length === 0) return false;
-            saveData();
-            refreshStatusTimerButtons();
-            return true;
-        }
-
-        function showTimerContextMenu(x, y, noteIndex, anchorElement = null) {
-            processExpiredStatusTimers();
-            contextMenu.dataset.menuType = 'timer';
+        function showStatusContextMenu(x, y, noteIndex, anchorElement = null) {
+            contextMenu.dataset.menuType = 'status';
             contextMenu.dataset.noteIndex = String(noteIndex);
             contextMenu.classList.remove('menu-thumbtack');
             contextMenu.classList.add('menu-cell');
             contextMenu.style.opacity = '1';
-            contextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+            contextMenu.style.backgroundColor = '#ffffff';
 
-            const targets = getStatusTimerTargets(noteIndex);
-            contextMenu.dataset.timerTargets = JSON.stringify(targets);
-            const activeTimers = targets.filter(index => normalizeStatusTimer(notes[index].statusTimer));
-            const statusOptions = [
-                ['wave', 'Wave', '#d946ef'], ['dashed', 'Dash', '#3b82f6'],
-                ['checkmark', 'Check', '#22c55e'], ['single', 'Single', '#f59e0b'],
-                ['double', 'Double', '#f97316'], ['triple', 'Triple', '#ef4444'],
-                ['vertical', 'Vertical', '#8b4513'], ['zigzag', 'Zigzag', '#4b5563']
+            const current = getNoteStatuses(notes[noteIndex])[0] || false;
+            const options = [
+                { id: 'single', name: 'Single', color: '#f59e0b', border: 'border-amber-300' },
+                { id: 'double', name: 'Double', color: '#f97316', border: 'border-orange-300' },
+                { id: 'triple', name: 'Triple', color: '#ef4444', border: 'border-red-300' },
+                { id: 'vertical', name: 'Vertical', color: '#8b4513', border: 'border-amber-900' },
+                { id: 'wave', name: 'Wave', color: '#d946ef', border: 'border-fuchsia-300' },
+                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', border: 'border-indigo-300' },
+                { id: 'dashed', name: 'Dashed', color: '#3b82f6', border: 'border-blue-300' },
+                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', border: 'border-green-300' },
+                { id: false, name: 'None', color: '#ffffff', border: 'border-gray-400' }
             ];
-            const existingTimers = activeTimers.map(index => normalizeStatusTimer(notes[index].statusTimer));
-            const existingTimer = existingTimers[0] || null;
-            const currentStatuses = getNoteStatuses(notes[noteIndex]);
-            const initialStatuses = existingTimer?.statuses || currentStatuses;
-            const remaining = existingTimer ? existingTimer.dueAt - Date.now() : 0;
-            const initialUnit = existingTimer && remaining >= 86400000 ? 'days' : 'hours';
-            const selectedDuration = existingTimer
-                ? Math.ceil(remaining / (initialUnit === 'days' ? 86400000 : 3600000))
-                : 0;
-            const targetDescription = selectedNotes.has(noteIndex) && selectedNotes.size > 1
-                ? `${targets.length} note${targets.length === 1 ? '' : 's'}`
-                : '1 note';
-
-            let html = `<form id="status-timer-form" class="menu-timer-container flex flex-col gap-2 text-sm text-gray-800">
-                <div class="flex items-center justify-between gap-2">
-                    <div class="font-semibold text-gray-900">Auto Status</div>
-                    <div class="text-[10px] text-gray-500">${targetDescription}</div>
+            let html = `<div class="menu-filter-container select-none">`;
+            options.forEach(opt => {
+                const isSelected = opt.id === current;
+                const selectedClass = isSelected ? 'bg-blue-50/70 text-blue-700 font-bold' : 'text-gray-800';
+                html += `<div class="menu-filter-item ${selectedClass}" onclick="applyStatusToSelection(${noteIndex}, ${opt.id ? `'${opt.id}'` : 'false'})">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-3 h-3 rounded-full shrink-0 border ${opt.border} shadow-sm" style="background-color: ${opt.color};"></span>
+                        <span class="font-medium">${opt.name}</span>
+                    </div>
+                    ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
                 </div>`;
-            if (targets.length === 0) {
-                html += `<div class="text-[10px] text-gray-500">Add a note to a selected cell to use a timer.</div>`;
-            } else {
-                html += `<div class="text-[10px] leading-3 text-gray-500">The selected status replaces the current one.</div>
-                <div class="grid grid-cols-4 gap-1" role="group" aria-label="Statuses to apply">
-                    ${statusOptions.map(([value, label, color]) => `<button type="button" class="timer-choice timer-status-choice" data-timer-status="${value}" aria-pressed="${initialStatuses.includes(value)}"><span class="timer-status-dot" style="background-color:${color}"></span>${label}</button>`).join('')}
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <span class="shrink-0 text-[10px] font-medium text-gray-600">After</span>
-                    <input id="status-timer-duration" type="number" min="0" step="1" value="${selectedDuration}" aria-label="Duration"
-                        class="h-7 w-16 rounded border border-gray-300 bg-white px-1.5 text-xs">
-                    <button type="button" class="timer-choice flex-1" data-timer-unit="hours" aria-pressed="${initialUnit === 'hours'}">Hours</button>
-                    <button type="button" class="timer-choice flex-1" data-timer-unit="days" aria-pressed="${initialUnit === 'days'}">Days</button>
-                </div>`;
-            }
-            html += `</form>`;
+            });
+            html += `</div>`;
             contextMenu.innerHTML = html;
-            positionMenu(x, y, anchorElement, 'timer');
+            positionMenu(x, y, anchorElement, getCellMenuAlign(anchorElement));
+        }
 
-            const form = document.getElementById('status-timer-form');
-            if (form) {
-                let selectedUnit = initialUnit;
-                form.querySelectorAll('[data-timer-status]').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const willSelect = button.getAttribute('aria-pressed') !== 'true';
-                        form.querySelectorAll('[data-timer-status]').forEach(other => {
-                            other.setAttribute('aria-pressed', String(willSelect && other === button));
-                        });
-                    });
-                });
-                form.querySelectorAll('[data-timer-unit]').forEach(button => {
-                    button.addEventListener('click', () => {
-                        selectedUnit = button.dataset.timerUnit;
-                        form.querySelectorAll('[data-timer-unit]').forEach(unitButton => {
-                            unitButton.setAttribute('aria-pressed', String(unitButton.dataset.timerUnit === selectedUnit));
-                        });
-                    });
-                });
-                form.addEventListener('submit', (event) => {
-                    event.preventDefault();
-                    closeContextMenu();
-                });
+        window.applyStatusToSelection = function (noteIndex, status) {
+            getSelectionTargets(noteIndex).forEach(index => setNoteStatus(index, status));
+            saveData();
+            closeContextMenu();
+        };
+
+        function toggleSnoozeContextMenu(x, y, noteIndex, anchorElement = null) {
+            if (isContextMenuOpenFor('snooze', noteIndex)) {
+                closeContextMenu();
+            } else if (closeContextMenu()) {
+                showSnoozeContextMenu(x, y, noteIndex, anchorElement);
             }
         }
 
-        function applyStatusTimer(note, timer) {
-            const statuses = getNoteStatuses(timer.statuses);
-            note.statuses = statuses;
-            note.status = statuses[0] || false;
-            delete note.blinking;
-            delete note.strike;
-            delete note.xMark;
-            delete note.statusTimer;
-            updateNoteStatusDisplay(notes.indexOf(note));
+        function showSnoozeContextMenu(x, y, noteIndex, anchorElement = null) {
+            contextMenu.dataset.menuType = 'snooze';
+            contextMenu.dataset.noteIndex = String(noteIndex);
+            contextMenu.classList.remove('menu-thumbtack');
+            contextMenu.classList.add('menu-cell');
+            contextMenu.style.opacity = '1';
+            contextMenu.style.backgroundColor = '#ffffff';
+
+            const targets = getSelectionTargets(noteIndex);
+            contextMenu.dataset.snoozeTargets = JSON.stringify(targets);
+            const until = getNoteSnoozeUntil(notes[targets[0]]);
+            const unit = until ? getSnoozeUnit(until) : getLastSnoozeUnit();
+            const duration = !until ? 0 : unit === 'days'
+                ? getSnoozeDays(until)
+                : Math.max(1, Math.ceil((until - Date.now()) / 3600000));
+            contextMenu.dataset.snoozeInitial = `${duration}|${unit}`;
+
+            contextMenu.innerHTML = `<form id="snooze-form" class="menu-timer-container flex items-center gap-1.5 text-gray-800">
+                <span class="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-gray-600">${iconSnooze}Dim for</span>
+                <input id="snooze-duration" type="number" min="0" step="1" value="${duration}" aria-label="Duration"
+                    class="h-8 w-14 rounded border border-gray-300 bg-white px-1.5 text-sm">
+                <button type="button" class="timer-choice" data-snooze-unit="hours" aria-pressed="${unit === 'hours'}">Hour(s)</button>
+                <button type="button" class="timer-choice" data-snooze-unit="days" aria-pressed="${unit === 'days'}">Day(s)</button>
+            </form>`;
+            positionMenu(x, y, anchorElement, getCellMenuAlign(anchorElement));
+
+            const form = document.getElementById('snooze-form');
+            form.querySelectorAll('[data-snooze-unit]').forEach(button => {
+                button.addEventListener('click', () => {
+                    form.querySelectorAll('[data-snooze-unit]').forEach(other => {
+                        other.setAttribute('aria-pressed', String(other === button));
+                    });
+                });
+            });
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                closeContextMenu();
+            });
         }
 
-        function processExpiredStatusTimers() {
-            const now = Date.now();
+        // Returns null for invalid input (keeps the menu open), false when nothing was changed
+        function commitSnoozeMenu() {
+            if (contextMenu.dataset.menuType !== 'snooze') return false;
+            const input = document.getElementById('snooze-duration');
+            if (!input) return false;
+            const duration = input.valueAsNumber;
+            if (!Number.isSafeInteger(duration) || duration < 0) {
+                input.setCustomValidity('Enter a whole number that is zero or greater.');
+                input.reportValidity();
+                return null;
+            }
+            input.setCustomValidity('');
+
+            const unit = contextMenu.querySelector('[data-snooze-unit][aria-pressed="true"]')?.dataset.snoozeUnit || 'hours';
+            if (`${duration}|${unit}` === contextMenu.dataset.snoozeInitial) return false;
+
+            const until = getSnoozeEnd(duration, unit);
+            if (!Number.isSafeInteger(until) || until > 8640000000000000) {
+                input.setCustomValidity('The selected duration is too large.');
+                input.reportValidity();
+                return null;
+            }
+            if (duration > 0) localStorage.setItem('tinyNotesSnoozeUnit', unit);
+            JSON.parse(contextMenu.dataset.snoozeTargets || '[]').filter(index => notes[index]).forEach(index => {
+                if (duration > 0) notes[index].snoozeUntil = until;
+                else delete notes[index].snoozeUntil;
+                updateNoteStatusDisplay(index);
+            });
+            saveData();
+            refreshSnoozeDocks();
+            return true;
+        }
+
+        function processExpiredSnoozes() {
             let changed = false;
             notes.forEach(note => {
-                if (!note) return;
-                const timer = normalizeStatusTimer(note.statusTimer);
-                if (timer && timer.dueAt <= now) {
-                    applyStatusTimer(note, timer);
+                if (note && note.snoozeUntil && !getNoteSnoozeUntil(note)) {
+                    delete note.snoozeUntil;
                     changed = true;
                 }
             });
             if (changed) {
-                if (contextMenu.dataset.menuType === 'timer') closeContextMenu();
                 saveData();
                 renderGrid();
             }
         }
 
-        function scheduleStatusTimers() {
-            if (statusTimerTimeout !== null) {
-                clearTimeout(statusTimerTimeout);
-                statusTimerTimeout = null;
+        function scheduleSnoozeExpiry() {
+            if (snoozeExpiryTimeout !== null) {
+                clearTimeout(snoozeExpiryTimeout);
+                snoozeExpiryTimeout = null;
             }
             let nextDueAt = Infinity;
             notes.forEach(note => {
-                if (!note) return;
-                const timer = normalizeStatusTimer(note.statusTimer);
-                if (timer && timer.dueAt < nextDueAt) nextDueAt = timer.dueAt;
+                const until = getNoteSnoozeUntil(note);
+                if (until && until < nextDueAt) nextDueAt = until;
             });
             if (Number.isFinite(nextDueAt)) {
                 const delay = Math.max(0, Math.min(nextDueAt - Date.now(), 2147483647));
-                statusTimerTimeout = setTimeout(() => {
-                    statusTimerTimeout = null;
-                    processExpiredStatusTimers();
-                    scheduleStatusTimers();
+                snoozeExpiryTimeout = setTimeout(() => {
+                    snoozeExpiryTimeout = null;
+                    processExpiredSnoozes();
+                    scheduleSnoozeExpiry();
                 }, delay);
             }
+        }
+
+        // Prefer the side of the stone where the clicked icon sits (left or right)
+        function getPreferredMenuSide(anchorElement) {
+            const stoneRect = getActiveMenuStoneRect(anchorElement);
+            const anchorRect = anchorElement?.getBoundingClientRect?.();
+            if (!stoneRect || !anchorRect) return 'right';
+            const anchorCenter = anchorRect.left + anchorRect.width / 2;
+            return anchorCenter < stoneRect.left + stoneRect.width / 2 ? 'left' : 'right';
+        }
+
+        // Group toolbar menus open beside the selection on the clicked icon's side
+        function getCellMenuAlign(anchorElement) {
+            return anchorElement?.closest?.('#group-action-toolbar') ? getPreferredMenuSide(anchorElement) : 'timer';
         }
 
         function showColorContextMenu(x, y, noteIndex, anchorElement = null) {
@@ -4121,7 +4153,7 @@
             });
             html += `</div>`;
 
-            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'right');
+            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : getPreferredMenuSide(anchorElement));
         }
 
         window.changeNoteColorKeepEditing = function (idx, color) {
@@ -4143,8 +4175,8 @@
             contextMenu.dataset.noteIndex = String(noteIndex);
             contextMenu.classList.remove('menu-thumbtack');
             contextMenu.classList.add('menu-opacity-90', 'menu-cell');
-            contextMenu.style.opacity = '0.9';
-            contextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            contextMenu.style.opacity = '1';
+            contextMenu.style.backgroundColor = '#ffffff';
             const isTitle = noteIndex === 'title';
             let currentFontIdx = isTitle ? titleState.fontIndex : notes[noteIndex].fontIndex;
             const labelArray = ['Tiny', 'Fine', 'Small', 'Medium', 'Large', 'Huge', 'Giant'];
@@ -4160,12 +4192,12 @@
                 const action = isTitle ? `changeTitleFont(${idx})` : `changeNoteFont(${noteIndex}, ${idx})`;
                 html += `<div class="menu-font-item ${selectedClass}" onclick="${action}; closeContextMenu();">
                     <span class="font-medium">${labelArray[idx]}</span>
-                    ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                    ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
                 </div>`;
             });
 
             html += `</div>`;
-            contextMenu.innerHTML = html; positionMenu(x, y, anchorElement, isTitle ? 'default' : 'left');
+            contextMenu.innerHTML = html;             positionMenu(x, y, anchorElement, isTitle ? 'default' : getPreferredMenuSide(anchorElement));
         }
 
         function commitCurrentEdit() {
@@ -4412,7 +4444,7 @@
             // 1. Color button: on top-left of the selection
             const colorBtn = document.createElement('div');
             colorBtn.className = btnBase;
-            colorBtn.setAttribute('style', `${btnStyle}position:absolute;bottom:-14px;right:-14px;`);
+            colorBtn.setAttribute('style', `${btnStyle}position:absolute;bottom:-14px;left:-14px;`);
             colorBtn.title = 'Change color';
             colorBtn.innerHTML = iconPalette;
             colorBtn.addEventListener('click', (e) => {
@@ -4428,8 +4460,8 @@
             // 2. Timer button: on bottom-left of the selection
             const timerBtn = document.createElement('div');
             timerBtn.className = btnBase;
-            timerBtn.setAttribute('style', `${btnStyle}position:absolute;bottom:-14px;left:-14px;`);
-            timerBtn.title = 'Auto Status';
+            timerBtn.setAttribute('style', `${btnStyle}position:absolute;top:-14px;right:-14px;`);
+            timerBtn.title = 'Set status';
             timerBtn.innerHTML = iconStatus;
             timerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -4437,14 +4469,14 @@
                 document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                 const cell = document.getElementById(`grid-cell-${anchorIdx}`);
                 if (cell) cell.classList.add('has-menu');
-                toggleTimerContextMenu(e.pageX, e.pageY, anchorIdx, timerBtn);
+                toggleStatusContextMenu(e.pageX, e.pageY, anchorIdx, timerBtn);
             });
             toolbar.appendChild(timerBtn);
 
             // 3. Font button: on bottom-right of the selection
             const fontBtn = document.createElement('div');
             fontBtn.className = btnBase;
-            fontBtn.setAttribute('style', `${btnStyle}position:absolute;top:-14px;left:-14px;`);
+            fontBtn.setAttribute('style', `${btnStyle}position:absolute;bottom:-14px;right:-14px;`);
             fontBtn.title = 'Change font size';
             fontBtn.innerHTML = iconFont;
             fontBtn.addEventListener('click', (e) => {
@@ -4457,19 +4489,19 @@
             });
             toolbar.appendChild(fontBtn);
 
-            // 4. Extra status (Flag) button: on top-right of the selection
+            // 4. Dim timer button: on top-right of the selection
             const statusBtn2 = document.createElement('div');
             statusBtn2.className = btnBase;
-            statusBtn2.setAttribute('style', `${btnStyle}position:absolute;top:-14px;right:-14px;`);
-            statusBtn2.title = 'Auto Status';
-            statusBtn2.innerHTML = iconStatus;
+            statusBtn2.setAttribute('style', `${btnStyle}position:absolute;top:-14px;left:-14px;`);
+            statusBtn2.title = 'Dim timer';
+            statusBtn2.innerHTML = iconSnooze;
             statusBtn2.addEventListener('click', (e) => {
                 e.stopPropagation();
                 activeMenuIndex = anchorIdx;
                 document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                 const cell = document.getElementById(`grid-cell-${anchorIdx}`);
                 if (cell) cell.classList.add('has-menu');
-                toggleTimerContextMenu(e.pageX, e.pageY, anchorIdx, statusBtn2);
+                toggleSnoozeContextMenu(e.pageX, e.pageY, anchorIdx, statusBtn2);
             });
             toolbar.appendChild(statusBtn2);
 
@@ -4591,7 +4623,7 @@
         function setupWindowSelection() {
             document.addEventListener('pointerdown', (event) => {
                 if (event.button !== 0 || isCapturingScreenshot || editingIndex !== null || titleState.isEditing) return;
-                if (event.target.closest('.app-header, #context-menu, #about-modal, .title-menu-button, .thumbtack, button, input, textarea, [contenteditable="true"], .btn-save, #btn-trash-snackbar, .cell-underline-dock')) return;
+                if (event.target.closest('.app-header, #context-menu, #about-modal, .title-menu-button, .thumbtack, button, input, textarea, [contenteditable="true"], .btn-save, .cell-underline-dock, .cell-timer-dock')) return;
 
                 const cell = event.target.closest('.grid-cell');
                 if (cell) {
@@ -5199,18 +5231,11 @@
                         underlineDock.className = 'cell-underline-dock';
                         underlineDock.innerHTML = isEditing ? '' : getUnderlineHtml(note);
                         underlineDock.style.pointerEvents = isEditing ? 'none' : 'auto';
-                        if (!isEditing) {
-                            underlineDock.dataset.noteIndex = String(i);
-                            updateStatusTimerDock(underlineDock, i);
-                            underlineDock.addEventListener('mouseenter', () => updateStatusTimerDock(underlineDock, i));
-                        }
             if (!isEditing) {
                 underlineDock.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    activeMenuIndex = i;
-                    document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
-                    cell.classList.add('has-menu');
-                    toggleStatusContextMenu(e.pageX, e.pageY, i, e.currentTarget);
+                    closeContextMenu();
+                    cycleNoteStatus(i);
                 });
             }
 
@@ -5249,25 +5274,19 @@
                                 } else note.text = newText;
                                 editingIndex = null; activeMenuIndex = null; saveData(); renderGrid();
                             }, 'Save note'));
-                            // Bottom-Right: Color
-                            dragWrapper.appendChild(createMenuButton('-bottom-2 -right-2 w-7 h-7', iconPalette, (e) => {
+                            // Bottom-Left: Color
+                            dragWrapper.appendChild(createMenuButton('-bottom-2 -left-2 w-7 h-7', iconPalette, (e) => {
                                 activeMenuIndex = i;
                                 cell.classList.add('has-menu');
                                 note.text = inputContainer.innerText;
                                 toggleColorContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                             }, 'Change color'));
 
-                            // Bottom-Left: Auto Status
-                            const timerButton = createMenuButton('-bottom-2 -left-2 w-7 h-7', iconStatus, (e) => {
-                                activeMenuIndex = i;
-                                cell.classList.add('has-menu');
-                                note.text = inputContainer.innerText;
-                                toggleTimerContextMenu(e.pageX, e.pageY, i, e.currentTarget);
-                            }, 'Auto Status');
-                            dragWrapper.appendChild(timerButton);
+                            // Top-Left: Delete
+                            dragWrapper.appendChild(createMenuButton('-top-2 -left-2 w-7 h-7', iconTrashBin, () => deleteNote(i, inputContainer.innerText), 'Delete note'));
 
-                            // Top-Left: Font Size
-                            dragWrapper.appendChild(createMenuButton('-top-2 -left-2 w-7 h-7', iconFont, (e) => {
+                            // Bottom-Right: Font Size
+                            dragWrapper.appendChild(createMenuButton('-bottom-2 -right-2 w-7 h-7', iconFont, (e) => {
                                 activeMenuIndex = i;
                                 cell.classList.add('has-menu');
                                 note.text = inputContainer.innerText;
@@ -5279,6 +5298,19 @@
                             dragWrapper.appendChild(circle);
                             cell.appendChild(dragWrapper);
                             cell.appendChild(underlineDock);
+
+                            const timerDock = document.createElement('div');
+                            timerDock.className = 'cell-timer-dock';
+                            timerDock.dataset.noteIndex = String(i);
+                            updateSnoozeDock(timerDock, i);
+                            timerDock.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                activeMenuIndex = i;
+                                document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
+                                cell.classList.add('has-menu');
+                                toggleSnoozeContextMenu(e.pageX, e.pageY, i, e.currentTarget);
+                            });
+                            cell.appendChild(timerDock);
 
                             if (!isCapturingScreenshot && !titleState.isEditing) {
                                 // Never render individual cell action buttons if a group selection is active
@@ -5294,25 +5326,24 @@
                                         renderGrid();
                                     }, 'Edit note'));
 
-                                    // Bottom-Right: Color
-                                    dragWrapper.appendChild(createMenuButton(`-bottom-2 -right-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconPalette, (e) => {
+                                    // Bottom-Left: Color
+                                    dragWrapper.appendChild(createMenuButton(`-bottom-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconPalette, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
                                         toggleColorContextMenu(e.pageX, e.pageY, i, e.currentTarget);
                                     }, 'Change color'));
 
-                                    // Bottom-Left: Auto Status
-                                    const timerButton = createMenuButton(`-bottom-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconStatus, (e) => {
+                                    // Top-Left: Dim timer
+                                    dragWrapper.appendChild(createMenuButton(`-top-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconSnooze, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
-                                        toggleTimerContextMenu(e.pageX, e.pageY, i, e.currentTarget);
-                                    }, 'Auto Status');
-                                    dragWrapper.appendChild(timerButton);
+                                        toggleSnoozeContextMenu(e.pageX, e.pageY, i, e.currentTarget);
+                                    }, 'Dim timer'));
 
-                                    // Top-Left: Font Size
-                                    dragWrapper.appendChild(createMenuButton(`-top-2 -left-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconFont, (e) => {
+                                    // Bottom-Right: Font Size
+                                    dragWrapper.appendChild(createMenuButton(`-bottom-2 -right-2 w-7 h-7 stone-action-btn ${btnExtraClass}`, iconFont, (e) => {
                                         activeMenuIndex = i;
                                         document.querySelectorAll('.grid-cell.has-menu').forEach(c => c.classList.remove('has-menu'));
                                         cell.classList.add('has-menu');
@@ -5568,121 +5599,6 @@
             updateMultiSelectionBox();
         }
 
-        let activeStatusAnchor = null;
-
-        function showStatusContextMenu(x, y, noteIndex, anchorElement = null) {
-            if (noteIndex === 'title' || !notes[noteIndex]) return;
-            contextMenu.dataset.menuType = 'status';
-            contextMenu.dataset.noteIndex = String(noteIndex);
-            contextMenu.classList.remove('menu-thumbtack');
-            contextMenu.classList.add('menu-opacity-90', 'menu-cell');
-            contextMenu.style.opacity = '0.9';
-            contextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-            if (anchorElement) activeStatusAnchor = anchorElement;
-
-            const activeStatuses = getNoteStatuses(notes[noteIndex]);
-            const options = [
-                { id: false, name: 'None', color: '#ffffff', dotBorder: 'border-gray-400' },
-                { id: 'wave', name: 'Wave', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
-                { id: 'dashed', name: 'Dashed', color: '#3b82f6', dotBorder: 'border-blue-300' },
-                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' },
-                { id: 'single', name: 'Single', color: '#f59e0b', dotBorder: 'border-amber-300' },
-                { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
-                { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
-                { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' },
-                { id: 'zigzag', name: 'Zigzag', color: '#4b5563', dotBorder: 'border-gray-500' }
-            ];
-
-            let html = `<div class="menu-status-container select-none">`;
-            options.forEach(opt => {
-                const isSelected = (opt.id === false)
-                    ? (activeStatuses.length === 0)
-                    : activeStatuses.includes(opt.id);
-                const selectedClass = isSelected ? 'bg-blue-50/70 text-blue-700 font-bold' : 'text-gray-800';
-                const action = `toggleNoteStatus(${noteIndex}, ${opt.id === false ? 'false' : `'${opt.id}'`});`;
-                html += `<div class="menu-status-item ${selectedClass}" onclick="${action}">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-3 h-3 rounded-full shrink-0 border ${opt.dotBorder || 'border-black/20'} shadow-sm" style="background-color: ${opt.color};"></span>
-                        <span class="font-medium" style="${opt.style || ''}">${opt.name}</span>
-                    </div>
-                    ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
-                </div>`;
-            });
-            html += `</div>`;
-            contextMenu.innerHTML = html;
-            positionMenu(x, y, activeStatusAnchor, 'left');
-        }
-
-        window.toggleNoteStatus = function (idx, mode) {
-            if (!notes[idx]) return;
-            const targets = (selectedNotes.has(idx) && selectedNotes.size > 1)
-                ? Array.from(selectedNotes)
-                : [idx];
-
-            if (!mode || mode === 'off' || mode === 'none') {
-                // Clicking "None": clear all statuses
-                targets.forEach(targetIdx => {
-                    if (!notes[targetIdx]) return;
-                    notes[targetIdx].statuses = [];
-                    delete notes[targetIdx].status;
-                    delete notes[targetIdx].blinking;
-                    delete notes[targetIdx].strike;
-                    if (notes[targetIdx].xMark) delete notes[targetIdx].xMark;
-
-                    const cell = document.getElementById('grid-cell-' + targetIdx);
-                    if (cell) {
-                        const dock = cell.querySelector('.cell-underline-dock');
-                        if (dock) dock.innerHTML = '';
-                        cell.classList.remove(...statusClassNames);
-                        cell.classList.add('cell-status-normal');
-                    }
-                });
-            } else {
-                const canonical = canonicalStatus(mode);
-                const anchorStatuses = getNoteStatuses(notes[idx]);
-                const shouldRemove = anchorStatuses.includes(canonical);
-
-                targets.forEach(targetIdx => {
-                    if (!notes[targetIdx]) return;
-                    const cur = shouldRemove ? [] : [canonical];
-                    notes[targetIdx].statuses = cur;
-                    notes[targetIdx].status = cur[0] || false;
-                    delete notes[targetIdx].blinking;
-                    delete notes[targetIdx].strike;
-                    if (notes[targetIdx].xMark) delete notes[targetIdx].xMark;
-
-                    // Update cell underline dock and classes in-place
-                    const cell = document.getElementById('grid-cell-' + targetIdx);
-                    if (cell) {
-                        const dock = cell.querySelector('.cell-underline-dock');
-                        if (dock) {
-                            dock.innerHTML = getUnderlineHtml(notes[targetIdx]);
-                        }
-                        const activeSts = getNoteStatuses(notes[targetIdx]);
-                        cell.classList.remove(...statusClassNames, 'cell-status-normal');
-                        cell.classList.add(activeSts.length > 0 ? `cell-status-${activeSts[0]}` : 'cell-status-normal');
-                    }
-                });
-            }
-
-            targets.forEach(targetIdx => {
-                const cell = document.getElementById('grid-cell-' + targetIdx);
-                if (cell && notes[targetIdx]) {
-                    cell.classList.toggle(
-                        'note-filtered-out',
-                        editingIndex !== targetIdx && !isNoteMatchingFilter(notes[targetIdx])
-                    );
-                }
-            });
-
-            saveData();
-
-            if (!contextMenu.classList.contains('hidden') && contextMenu.dataset.menuType === 'status') {
-                closeContextMenu();
-            }
-        };
-        window.changeNoteStatus = window.toggleNoteStatus;
-
 
         function getFileTimestamp() {
             const now = new Date();
@@ -5697,7 +5613,7 @@
 
         document.getElementById('btn-save').addEventListener('click', (e) => {
             e.stopPropagation(); closeContextMenu(); commitCurrentEdit();
-            const data = { cols: totalCols, rows: totalRows, totalCols, totalRows, columnGap, rowGap, notes, titleState, titleColorVersion: 2, pageColorIndex, appColorIndex: workspaceColorIndex, cellStyle, filterSettings: Array.from(filterStatusSet) };
+            const data = getSaveObject();
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
@@ -5711,6 +5627,51 @@
 
         document.getElementById('btn-load').addEventListener('click', (e) => {
             e.stopPropagation(); closeContextMenu(); commitCurrentEdit(); fileInput.click();
+        });
+
+        document.getElementById('btn-sync').addEventListener('click', async (e) => {
+            e.stopPropagation(); closeContextMenu(); commitCurrentEdit();
+            if (syncFileHandle) { stopFileSync(); return; }
+            if (!window.showSaveFilePicker && !window.showOpenFilePicker) {
+                alert('File syncing needs a browser that can write files directly (for example Chrome or Edge).');
+                return;
+            }
+            if (isHeaderMenuOpen('sync')) return;
+            showSyncMenu(e.currentTarget);
+        });
+        function confirmDeleteNotes(indices) {
+            const targets = indices.filter(index => notes[index]);
+            if (!targets.length) return false;
+            const first = (notes[targets[0]].text || '').trim();
+            const preview = first.length > 120 ? `${first.slice(0, 120)}…` : first;
+            const message = targets.length === 1
+                ? `Delete this note?\n\n${preview || '(empty note)'}`
+                : `Delete ${targets.length} notes?`;
+            if (!window.confirm(message)) return false;
+            targets.forEach(index => { notes[index] = null; });
+            selectedNotes.clear();
+            activeMenuIndex = null;
+            editingIndex = null;
+            saveData();
+            renderGrid();
+            return true;
+        }
+
+        const trashButton = document.getElementById('btn-trash');
+        trashButton.addEventListener('click', (e) => {
+            e.stopPropagation(); closeContextMenu();
+            if (editingIndex !== null) { commitCurrentEdit(); }
+            const targets = selectedNotes.size ? Array.from(selectedNotes) : (activeMenuIndex !== null ? [activeMenuIndex] : []);
+            confirmDeleteNotes(targets);
+        });
+        trashButton.addEventListener('dragover', (e) => {
+            if (draggedShape || draggedIndex !== null) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+        });
+        trashButton.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dragged = draggedShape ? draggedShape.indices.slice() : (draggedIndex !== null ? [draggedIndex] : []);
+            endDragSession();
+            setTimeout(() => confirmDeleteNotes(dragged), 0);
         });
 
         fileInput.addEventListener('change', (e) => {
@@ -5853,13 +5814,15 @@
         });
         document.addEventListener('dragend', endDragSession);
         loadData();
+        restoreSyncOnStartup();
         renderTitle();
         resizeGrid();
         renderGrid();
-        processExpiredStatusTimers();
-        scheduleStatusTimers();
+        processExpiredSnoozes();
+        scheduleSnoozeExpiry();
+        setInterval(refreshSnoozeDocks, 60000);
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) processExpiredStatusTimers();
+            if (!document.hidden) processExpiredSnoozes();
         });
 
         // Prevent flicker by showing the workspace only after the first render
