@@ -227,7 +227,7 @@
             position: absolute;
             top: calc(var(--cell-size) - 18px);
             left: 50%;
-            width: 72%;
+            width: 56%;
             max-width: calc(100% - 8px);
             height: 18px;
             flex: none;
@@ -252,7 +252,7 @@
             position: absolute;
             top: 0;
             left: 50%;
-            width: 72%;
+            width: 56%;
             max-width: calc(100% - 8px);
             height: 18px;
             display: flex;
@@ -312,7 +312,6 @@
 
         /* Dim and pause underline when note is filtered out (unless hovered or active) */
         .note-filtered-out:not(.is-selected):not(:hover):not(.has-menu) .underline-svg {
-            opacity: 0.1 !important;
             animation: none !important;
         }
 
@@ -516,6 +515,15 @@
             background: radial-gradient(circle at 35% 30%, #60a5fa 0%, #2563eb 52%, #1d4ed8 100%);
         }
 
+        .thumbtack.trash-drop-target,
+        .thumbtack.trash-drop-target:hover {
+            transform: scale(1.25);
+            color: #ffffff;
+            background: radial-gradient(circle at 35% 30%, #f87171 0%, #dc2626 52%, #991b1b 100%);
+            border-color: rgba(254, 202, 202, 0.9);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.75), inset 0 1px 3px rgba(255, 255, 255, 0.45);
+        }
+
         .note-filtered-out .stone-wrapper {
             opacity: 0.15;
             filter: grayscale(85%);
@@ -525,6 +533,21 @@
         /* When hovering on a filtered cell or when it has active menu, show cell normally */
         .note-filtered-out:hover .stone-wrapper,
         .note-filtered-out.has-menu .stone-wrapper {
+            opacity: 1 !important;
+            filter: none !important;
+        }
+
+        .note-filtered-out .cell-timer-dock,
+        .note-filtered-out .cell-underline-dock {
+            opacity: 0.15;
+            filter: grayscale(85%);
+            transition: opacity 0.2s ease, filter 0.2s ease;
+        }
+
+        .note-filtered-out:hover .cell-timer-dock,
+        .note-filtered-out.has-menu .cell-timer-dock,
+        .note-filtered-out:hover .cell-underline-dock,
+        .note-filtered-out.has-menu .cell-underline-dock {
             opacity: 1 !important;
             filter: none !important;
         }
@@ -2047,8 +2070,11 @@
             aria-label="Board and title colors settings">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="4" />
-                <circle cx="12" cy="12" r="5" />
+                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.53-.21-1.04-.59-1.41-.35-.38-.51-.9-.37-1.43.29-1.01 1.28-1.66 2.39-1.66H17c2.76 0 5-2.24 5-5 0-4.42-4.48-8-10-8z" />
             </svg>
         </div>
         <div id="btn-note-style" class="thumbtack" title="Note Style" role="button" tabindex="0"
@@ -2378,7 +2404,7 @@
 
         const titleColors = [
             'text-white',       // Pure White (#ffffff)
-            'text-cyan-300',   // Ice Cyan (#67e8f9)
+            'text-lime-400',   // Lime (#a3e635)
             'text-amber-400',  // Amber Gold (#fbbf24)
             'text-sky-400',    // Sky Cyan (#38bdf8)
             'text-blue-600',   // Sapphire Blue (#2563eb)
@@ -2391,13 +2417,13 @@
             'text-gray-800'    // Deep Charcoal (#1f2937)
         ];
         const titleColorNames = [
-            'Pure White', 'Ice Cyan', 'Amber Gold', 'Sky Cyan',
+            'Pure White', 'Lime', 'Amber Gold', 'Sky Cyan',
             'Sapphire Blue', 'Teal Ocean', 'Dark Indigo', 'Deep Burgundy',
             'Warm Espresso', 'Dark Plum', 'Midnight Navy', 'Deep Charcoal'
         ];
         const titleColorValues = {
             'text-white': '#ffffff',
-            'text-cyan-300': '#67e8f9',
+            'text-lime-400': '#a3e635',
             'text-amber-400': '#fbbf24',
             'text-sky-400': '#38bdf8',
             'text-blue-600': '#2563eb',
@@ -3777,14 +3803,14 @@
 
             const statusItems = [
                 { id: false, name: 'None', color: '#ffffff', dotBorder: 'border-gray-400' },
-                { id: 'wave', name: 'Wave', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
-                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', dotBorder: 'border-indigo-300' },
-                { id: 'dashed', name: 'Dashed', color: '#3b82f6', dotBorder: 'border-blue-300' },
-                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', dotBorder: 'border-amber-300' },
                 { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
                 { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
-                { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' }
+                { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' },
+                { id: 'wave', name: 'Wave', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
+                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', dotBorder: 'border-indigo-300' },
+                { id: 'dashed', name: 'Dashed', color: '#3b82f6', dotBorder: 'border-blue-300' },
+                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' }
             ];
 
             statusItems.forEach(item => {
@@ -3895,7 +3921,7 @@
                 const endDate = new Date(until);
                 const endDay = endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-                dock.title = `${endDay} ${endTime} (in ${badge})`;
+                dock.title = `${endDay} ${endTime}`;
             } else {
                 dock.innerHTML = iconSnooze;
                 dock.title = 'Dim timer';
@@ -5665,10 +5691,16 @@
             confirmDeleteNotes(targets);
         });
         trashButton.addEventListener('dragover', (e) => {
-            if (draggedShape || draggedIndex !== null) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+            if (draggedShape || draggedIndex !== null) {
+                e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+                trashButton.classList.add('trash-drop-target');
+            }
         });
+        trashButton.addEventListener('dragleave', () => trashButton.classList.remove('trash-drop-target'));
+        document.addEventListener('dragend', () => trashButton.classList.remove('trash-drop-target'));
         trashButton.addEventListener('drop', (e) => {
             e.preventDefault();
+            trashButton.classList.remove('trash-drop-target');
             const dragged = draggedShape ? draggedShape.indices.slice() : (draggedIndex !== null ? [draggedIndex] : []);
             endDragSession();
             setTimeout(() => confirmDeleteNotes(dragged), 0);
