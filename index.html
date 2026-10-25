@@ -3895,7 +3895,7 @@
                 const endDate = new Date(until);
                 const endDay = endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-                dock.title = `Ends at ${endDay} ${endTime} (in ${badge})`;
+                dock.title = `${endDay} ${endTime} (in ${badge})`;
             } else {
                 dock.innerHTML = iconSnooze;
                 dock.title = 'Dim timer';
