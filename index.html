@@ -310,12 +310,11 @@
             opacity: 0.35 !important;
         }
 
-        /* Dim and pause underline when note is filtered out (unless hovered or active) */
-        .note-filtered-out:not(.is-selected):not(:hover):not(.has-menu) .underline-svg {
+        /* Pause underline animation when note is filtered out unless selected or active. */
+        .note-filtered-out:not(.is-selected):not(.has-menu) .underline-svg {
             animation: none !important;
         }
 
-        .note-filtered-out:hover .underline-svg,
         .note-filtered-out.is-selected .underline-svg,
         .note-filtered-out.has-menu .underline-svg {
             opacity: 1 !important;
@@ -530,8 +529,6 @@
             transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
         }
 
-        /* When hovering on a filtered cell or when it has active menu, show cell normally */
-        .note-filtered-out:hover .stone-wrapper,
         .note-filtered-out.has-menu .stone-wrapper {
             opacity: 1 !important;
             filter: none !important;
@@ -544,22 +541,26 @@
             transition: opacity 0.2s ease, filter 0.2s ease;
         }
 
-        .note-filtered-out:hover .cell-timer-dock,
         .note-filtered-out.has-menu .cell-timer-dock,
-        .note-filtered-out:hover .cell-underline-dock,
         .note-filtered-out.has-menu .cell-underline-dock {
             opacity: 1 !important;
             filter: none !important;
         }
 
-        .note-filtered-out:not(.is-selected):not(:hover):not(.has-menu) * {
+        .note-filtered-out:not(.is-selected):not(.has-menu) * {
             animation: none !important;
         }
 
-        .note-filtered-out.is-selected .stone-wrapper,
         .note-filtered-out.has-menu .stone-wrapper {
             opacity: 1 !important;
             filter: none !important;
+        }
+
+        .note-filtered-out.is-selected .stone-wrapper,
+        .note-filtered-out.is-selected .cell-timer-dock,
+        .note-filtered-out.is-selected .cell-underline-dock {
+            opacity: 0.65 !important;
+            filter: grayscale(35%) !important;
         }
 
         .note-filtered-out-empty .cell-add-icon {
@@ -639,10 +640,6 @@
 
         .grid-cell {
             z-index: 10;
-        }
-
-        .grid-cell:hover:not(.is-selected):not(.has-menu) {
-            z-index: 20 !important;
         }
 
         .grid-cell.is-selected {
@@ -819,11 +816,6 @@
             cursor: pointer;
             z-index: 2;
             transition: opacity 0.15s ease, transform 0.15s ease;
-        }
-
-        .grid-cell:hover .cell-add-icon {
-            opacity: 0.85 !important;
-            transform: scale(1.15);
         }
 
         .tiny {
@@ -2267,12 +2259,12 @@
             const isMulti = count > 1;
             let paths = '';
 
-            // 1. Zigzag (indigo #6366f1) - lower track
+            // 1. Zigzag (indigo #4f46e5) - lower track
             if (hasZigzag) {
                 if (!isMulti) {
-                    paths += `<path d="M 5 5.5 L 11.3 12.5 L 17.6 5.5 L 23.9 12.5 L 30.1 5.5 L 36.4 12.5 L 42.7 5.5 L 49 12.5" fill="none" stroke="#6366f1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+                    paths += `<path d="M 5 5.5 L 11.3 12.5 L 17.6 5.5 L 23.9 12.5 L 30.1 5.5 L 36.4 12.5 L 42.7 5.5 L 49 12.5" fill="none" stroke="#4f46e5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
                 } else {
-                    paths += `<path d="M 5 9.5 L 11.3 16.2 L 17.6 9.5 L 23.9 16.2 L 30.1 9.5 L 36.4 16.2 L 42.7 9.5 L 49 16.2" fill="none" stroke="#6366f1" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>`;
+                    paths += `<path d="M 5 9.5 L 11.3 16.2 L 17.6 9.5 L 23.9 16.2 L 30.1 9.5 L 36.4 16.2 L 42.7 9.5 L 49 16.2" fill="none" stroke="#4f46e5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>`;
                 }
             }
 
@@ -2289,7 +2281,7 @@
                 }
             }
 
-            // 3. Vertical (brown #8b4513) - 7 vertical bars ||||||
+            // 3. Vertical (brown #8b4513) - 4 vertical bars
             if (hasVertical) {
                 let yTop = 4.0;
                 let yBot = 13.0;
@@ -2313,7 +2305,7 @@
                         strokeW = 2.1;
                     }
                 }
-                const vBars = [9, 15, 21, 27, 33, 39, 45].map(x => `M ${x} ${yTop} L ${x} ${yBot}`).join(' ');
+                const vBars = [12, 22, 32, 42].map(x => `M ${x} ${yTop} L ${x} ${yBot}`).join(' ');
                 paths += `<path d="${vBars}" fill="none" stroke="#8b4513" stroke-width="${strokeW}" stroke-linecap="round"/>`;
             }
 
@@ -2357,7 +2349,7 @@
                 paths += `<line x1="${xStart}" y1="${ySingle}" x2="${xEnd}" y2="${ySingle}" stroke="#f59e0b" stroke-width="${strokeW}" stroke-linecap="round"/>`;
             }
 
-            // 5. Dashed (blue #3b82f6) - segmented horizontal line
+            // 5. Dashed (sky blue #0ea5e9) - segmented horizontal line
             if (hasDashed) {
                 let yDash = 8.5;
                 if (isMulti) {
@@ -2377,7 +2369,7 @@
                         yDash = 8.5;
                     }
                 }
-                paths += `<path d="M 5.5 ${yDash} L 11.5 ${yDash} M 18.5 ${yDash} L 24.5 ${yDash} M 31.5 ${yDash} L 37.5 ${yDash} M 44.5 ${yDash} L 50.5 ${yDash}" stroke="#3b82f6" stroke-width="2.8" stroke-linecap="round"/>`;
+                paths += `<path d="M 5.5 ${yDash} L 11.5 ${yDash} M 18.5 ${yDash} L 24.5 ${yDash} M 31.5 ${yDash} L 37.5 ${yDash} M 44.5 ${yDash} L 50.5 ${yDash}" stroke="#0ea5e9" stroke-width="2.8" stroke-linecap="round"/>`;
             }
 
             // 6. Wave (fuchsia #d946ef) - upper track
@@ -2460,8 +2452,8 @@
 
         const workspaceColors = pageColors;
         const workspaceColorNames = pageColorNames;
-        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-400', 'bg-gray-500', 'note-stone-gray', 'bg-zinc-900', 'note-white'];
-        const noteColorNames = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'Gray', 'Stone Gray', 'Dark Charcoal', 'White'];
+        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-400', 'note-stone-gray', 'bg-gray-500', 'bg-zinc-900', 'note-white'];
+        const noteColorNames = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'Stone Gray', 'Gray', 'Dark Charcoal', 'White'];
         const fontSizes = ['tiny', 'fine', 'small', 'medium', 'large', 'huge', 'giant'];
 
         const LOCAL_STORAGE_KEY = 'singleBoardNotesV4';
@@ -3808,8 +3800,8 @@
                 { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
                 { id: 'vertical', name: 'Vertical', color: '#8b4513', dotBorder: 'border-amber-900' },
                 { id: 'wave', name: 'Wave', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
-                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', dotBorder: 'border-indigo-300' },
-                { id: 'dashed', name: 'Dashed', color: '#3b82f6', dotBorder: 'border-blue-300' },
+                { id: 'zigzag', name: 'Zigzag', color: '#4f46e5', dotBorder: 'border-indigo-300' },
+                { id: 'dashed', name: 'Dashed', color: '#0ea5e9', dotBorder: 'border-sky-300' },
                 { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' }
             ];
 
@@ -3991,8 +3983,8 @@
                 { id: 'triple', name: 'Triple', color: '#ef4444', border: 'border-red-300' },
                 { id: 'vertical', name: 'Vertical', color: '#8b4513', border: 'border-amber-900' },
                 { id: 'wave', name: 'Wave', color: '#d946ef', border: 'border-fuchsia-300' },
-                { id: 'zigzag', name: 'Zigzag', color: '#6366f1', border: 'border-indigo-300' },
-                { id: 'dashed', name: 'Dashed', color: '#3b82f6', border: 'border-blue-300' },
+                { id: 'zigzag', name: 'Zigzag', color: '#4f46e5', border: 'border-indigo-300' },
+                { id: 'dashed', name: 'Dashed', color: '#0ea5e9', border: 'border-sky-300' },
                 { id: 'checkmark', name: 'Checkmark', color: '#22c55e', border: 'border-green-300' },
                 { id: false, name: 'None', color: '#ffffff', border: 'border-gray-400' }
             ];
@@ -5191,8 +5183,6 @@
                         if (isSelectedCell) {
                             cell.style.zIndex = '50';
                             cell.classList.add('is-selected');
-                        } else {
-                            cell.classList.add('hover:z-20');
                         }
                         if (activeMenuIndex === i && selectedNotes.size === 1) {
                             cell.style.zIndex = '50';
