@@ -3866,10 +3866,12 @@ function getUnderlineHtml(noteOrStatuses) {
             updateNoteStatusDisplay(index);
         }
 
-        function cycleNoteStatus(noteIndex) {
+        function cycleNoteStatus(noteIndex, direction = 1) {
             if (!notes[noteIndex]) return;
             const current = getNoteStatuses(notes[noteIndex])[0] || false;
-            const next = statusCycle[(statusCycle.indexOf(current) + 1) % statusCycle.length];
+            const currentIndex = statusCycle.indexOf(current);
+            const nextIndex = (currentIndex + direction + statusCycle.length) % statusCycle.length;
+            const next = statusCycle[nextIndex];
             getSelectionTargets(noteIndex).forEach(index => setNoteStatus(index, next));
             saveData();
         }
@@ -5190,7 +5192,8 @@ function getUnderlineHtml(noteOrStatuses) {
                 underlineDock.addEventListener('click', (e) => {
                     e.stopPropagation();
                     closeContextMenu();
-                    cycleNoteStatus(i);
+                    const direction = e.clientX < e.currentTarget.getBoundingClientRect().left + e.currentTarget.offsetWidth / 2 ? -1 : 1;
+                    cycleNoteStatus(i, direction);
                 });
             }
 
