@@ -2206,7 +2206,7 @@
         const iconSnooze = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="2" x2="14" y2="2"></line><line x1="12" y1="14" x2="15" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg>`;
         const iconStatus = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`;
 
-        const statusModes = ['checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
+        const statusModes = ['single', 'double', 'triple', 'dashed', 'dotted', 'wave', 'checkmark'];
         const statusClassNames = ['cell-status-single', 'cell-status-double', 'cell-status-triple', 'cell-status-zigzag', 'cell-status-dotted', 'cell-status-dashed', 'cell-status-wave', 'cell-status-checkmark', 'cell-status-urgent', 'cell-status-priority', 'cell-status-important', 'cell-status-attention', 'cell-status-hold', 'cell-status-waiting', 'cell-status-completed', 'cell-status-conundrum'];
 
         function canonicalStatus(s) {
@@ -2293,7 +2293,7 @@ function getUnderlineHtml(noteOrStatuses) {
                           <line x1="8" y1="13.0" x2="46" y2="13.0" stroke="#ef4444" stroke-width="1.6" stroke-linecap="round"/>`;
             }              
 
-            // 4. Tick (green #22c55e) - diagonal accent
+            // 4. Checkmark (green #22c55e) - diagonal accent
             if (list.includes('checkmark')) {
                 paths += `<path d="M 18.5 9.5 L 24.8 15.0 L 36.5 3.5" fill="none" stroke="#22c55e" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2.5px rgba(34, 197, 94, 0.85));"/>`;
             }
@@ -2305,7 +2305,11 @@ function getUnderlineHtml(noteOrStatuses) {
 
             // 6. Dotted (indigo #4f46e5)
             if (list.includes('dotted')) {
-                paths += `<path d="M 6 8.5 H 50" fill="none" stroke="#4f46e5" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1 6.3"/>`;
+                paths += `<circle cx="7" cy="8.5" r="1.6" fill="#4f46e5"/>
+                          <circle cx="17" cy="8.5" r="1.6" fill="#4f46e5"/>
+                          <circle cx="27" cy="8.5" r="1.6" fill="#4f46e5"/>
+                          <circle cx="37" cy="8.5" r="1.6" fill="#4f46e5"/>
+                          <circle cx="47" cy="8.5" r="1.6" fill="#4f46e5"/>`;
             }
 
             // 7. Wave (sky blue #0ea5e9)
@@ -2390,7 +2394,7 @@ function getUnderlineHtml(noteOrStatuses) {
         let cellStyle = 'game'; // 'game' | 'natural' | 'traffic'
         let titleState = { text: "Tiny Notes", colorIndex: 4, fontIndex: 4, isMenuOpen: false, isEditing: false };
 
-        const ALL_STATUS_FILTERS = [false, 'checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
+        const ALL_STATUS_FILTERS = [false, 'single', 'double', 'triple', 'dashed', 'dotted', 'wave', 'checkmark'];
         const filterStatusSet = new Set(ALL_STATUS_FILTERS);
 
         function isFilterActive() {
@@ -3719,13 +3723,13 @@ function getUnderlineHtml(noteOrStatuses) {
 
             const statusItems = [
                 { id: false, name: 'None', color: '#ffffff', dotBorder: 'border-gray-400' },
-                { id: 'checkmark', name: 'Tick', color: '#22c55e', dotBorder: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', dotBorder: 'border-amber-300' },
                 { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
                 { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
                 { id: 'dashed', name: 'Dashed', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
                 { id: 'dotted', name: 'Dotted', color: '#4f46e5', dotBorder: 'border-indigo-300' },
-                { id: 'wave', name: 'Wave', color: '#0ea5e9', dotBorder: 'border-sky-300' }
+                { id: 'wave', name: 'Wave', color: '#0ea5e9', dotBorder: 'border-sky-300' },
+                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' }
             ];
 
             statusItems.forEach(item => {
@@ -3849,7 +3853,7 @@ function getUnderlineHtml(noteOrStatuses) {
             });
         }
 
-        const statusCycle = [false, 'checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
+        const statusCycle = [false, 'single', 'double', 'triple', 'dashed', 'dotted', 'wave', 'checkmark'];
 
         function setNoteStatus(index, status) {
             const note = notes[index];
@@ -3915,13 +3919,13 @@ function getUnderlineHtml(noteOrStatuses) {
             // ==============================================================
             const options = [
                 { id: false, name: 'None', color: '#ffffff', border: 'border-gray-400' },
-                { id: 'checkmark', name: 'Tick', color: '#22c55e', border: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', border: 'border-amber-300' },
                 { id: 'double', name: 'Double', color: '#f97316', border: 'border-orange-300' },
                 { id: 'triple', name: 'Triple', color: '#ef4444', border: 'border-red-300' },
                 { id: 'dashed', name: 'Dashed', color: '#d946ef', border: 'border-fuchsia-300' },
                 { id: 'dotted', name: 'Dotted', color: '#4f46e5', border: 'border-indigo-300' },
-                { id: 'wave', name: 'Wave', color: '#0ea5e9', border: 'border-sky-300' }
+                { id: 'wave', name: 'Wave', color: '#0ea5e9', border: 'border-sky-300' },
+                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', border: 'border-green-300' }
             ];
             let html = `<div class="menu-filter-container select-none">`;
             options.forEach(opt => {
