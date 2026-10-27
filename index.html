@@ -34,7 +34,7 @@
             --cell-size-min: 20px;
             --cell-size-max: 160px;
             /* The responsive layout shrinks cells to fit smaller screens. */
-            --stone-inset: 2px;
+            --stone-inset: 5px;
             /* Space inside each cell around its stone. */
             --selected-stone-lift: 0px;
             --selected-stone-scale: 1.0;
@@ -205,7 +205,8 @@
             height: 100%;
             align-self: stretch;
             justify-self: stretch;
-            border: 2px dashed var(--selection-ring-color, #eab308);
+            outline: 2px dashed var(--selection-ring-color, #eab308);
+            outline-offset: -1px;
             border-radius: 14px;
             box-shadow: 0 0 10px color-mix(in srgb, var(--selection-ring-color, #eab308) 35%, transparent);
             pointer-events: none !important;
@@ -1324,6 +1325,22 @@
             top: -0.25rem
         }
 
+        .-bottom-2 {
+            bottom: -0.5rem
+        }
+
+        .-left-2 {
+            left: -0.5rem
+        }
+
+        .-right-2 {
+            right: -0.5rem
+        }
+
+        .-top-2 {
+            top: -0.5rem
+        }
+
         .z-20 {
             z-index: 20
         }
@@ -2189,8 +2206,8 @@
         const iconSnooze = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="2" x2="14" y2="2"></line><line x1="12" y1="14" x2="15" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg>`;
         const iconStatus = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black pointer-events-none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`;
 
-        const statusModes = ['single', 'double', 'triple', 'zigzag', 'dashed', 'wave', 'checkmark'];
-        const statusClassNames = ['cell-status-single', 'cell-status-double', 'cell-status-triple', 'cell-status-zigzag', 'cell-status-dashed', 'cell-status-wave',  'cell-status-checkmark', 'cell-status-urgent', 'cell-status-priority', 'cell-status-important', 'cell-status-attention', 'cell-status-hold', 'cell-status-waiting', 'cell-status-completed', 'cell-status-conundrum'];
+        const statusModes = ['checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
+        const statusClassNames = ['cell-status-single', 'cell-status-double', 'cell-status-triple', 'cell-status-zigzag', 'cell-status-dotted', 'cell-status-dashed', 'cell-status-wave', 'cell-status-checkmark', 'cell-status-urgent', 'cell-status-priority', 'cell-status-important', 'cell-status-attention', 'cell-status-hold', 'cell-status-waiting', 'cell-status-completed', 'cell-status-conundrum'];
 
         function canonicalStatus(s) {
             if (!s || s === 'off' || s === 'none' || s === false) return null;
@@ -2198,7 +2215,7 @@
             if (str === 'single' || str === 'important') return 'single';
             if (str === 'double' || str === 'priority') return 'double';
             if (str === 'triple' || str === 'urgent') return 'triple';
-            if (str === 'zigzag' || str === 'conundrum') return 'zigzag';
+            if (str === 'zigzag' || str === 'dotted' || str === 'conundrum') return 'dotted';
             if (str === 'dashed' || str === 'hold' || str === 'waiting') return 'dashed';
             if (str === 'wave' || str === 'attention' || str === 'current') return 'wave';
             if (str === 'checkmark' || str === 'completed' || str === 'done' || str === 'linethrough') return 'checkmark';
@@ -2276,24 +2293,24 @@ function getUnderlineHtml(noteOrStatuses) {
                           <line x1="8" y1="13.0" x2="46" y2="13.0" stroke="#ef4444" stroke-width="1.6" stroke-linecap="round"/>`;
             }              
 
-            // 4. Checkmark (green #22c55e) - diagonal accent
+            // 4. Tick (green #22c55e) - diagonal accent
             if (list.includes('checkmark')) {
                 paths += `<path d="M 18.5 9.5 L 24.8 15.0 L 36.5 3.5" fill="none" stroke="#22c55e" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2.5px rgba(34, 197, 94, 0.85));"/>`;
             }
 
-            // 5. Dashed 
+            // 5. Dashed (fuchsia #d946ef)
             if (list.includes('dashed')) {
-                paths += `<path d="M 5.5 8.5 L 11.5 8.5 M 18.5 8.5 L 24.5 8.5 M 31.5 8.5 L 37.5 8.5 M 44.5 8.5 L 50.5 8.5" stroke="#0ea5e9" stroke-width="2.8" stroke-linecap="round"/>`;
+                paths += `<path d="M 5.5 8.5 L 11.5 8.5 M 18.5 8.5 L 24.5 8.5 M 31.5 8.5 L 37.5 8.5 M 44.5 8.5 L 50.5 8.5" stroke="#d946ef" stroke-width="2.8" stroke-linecap="round"/>`;
             }    
 
-            // 6. Wave 
+            // 6. Dotted (indigo #4f46e5)
+            if (list.includes('dotted')) {
+                paths += `<path d="M 6 8.5 H 50" fill="none" stroke="#4f46e5" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1 6.3"/>`;
+            }
+
+            // 7. Wave (sky blue #0ea5e9)
             if (list.includes('wave')) {
-                paths += `<path d="M 5 8.5 Q 10.5 4.0, 16 8.5 T 27 8.5 T 38 8.5 T 49 8.5" fill="none" stroke="#4f46e5" stroke-width="2.3" stroke-linecap="round"/>`;
-            }    
-
-            // 7. Zigzag (fuchsia #d946ef) - broken problem pattern
-            if (list.includes('zigzag')) {
-                paths += `<path d="M 5 9 L 13 9 L 16 3 L 19 15 L 22 2 L 25 12 M 27 5 L 30 16 L 33 4 L 37 13 L 41 9 L 49 9" fill="none" stroke="#d946ef" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+                paths += `<path d="M 5 8.5 Q 10.5 4.0, 16 8.5 T 27 8.5 T 38 8.5 T 49 8.5" fill="none" stroke="#0ea5e9" stroke-width="2.3" stroke-linecap="round"/>`;
             }
 
             return `<svg viewBox="0 0 54 18" width="54" height="18" class="underline-svg pointer-events-none" shape-rendering="geometricPrecision">${paths}</svg>`;
@@ -2373,7 +2390,7 @@ function getUnderlineHtml(noteOrStatuses) {
         let cellStyle = 'game'; // 'game' | 'natural' | 'traffic'
         let titleState = { text: "Tiny Notes", colorIndex: 4, fontIndex: 4, isMenuOpen: false, isEditing: false };
 
-        const ALL_STATUS_FILTERS = [false, 'single', 'double', 'triple', 'wave', 'zigzag', 'dashed', 'checkmark'];
+        const ALL_STATUS_FILTERS = [false, 'checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
         const filterStatusSet = new Set(ALL_STATUS_FILTERS);
 
         function isFilterActive() {
@@ -2633,7 +2650,9 @@ function getUnderlineHtml(noteOrStatuses) {
                 pageColorIndex: Number.isInteger(rawData.pageColorIndex) ? rawData.pageColorIndex : null,
                 workspaceColorIndex: Number.isInteger(rawData.appColorIndex) ? rawData.appColorIndex : null,
                 cellStyle: rawData.cellStyle || null,
-                filterSettings: Array.isArray(rawData.filterSettings) ? rawData.filterSettings.filter(f => ALL_STATUS_FILTERS.includes(f)) : null
+                filterSettings: Array.isArray(rawData.filterSettings)
+                    ? rawData.filterSettings.map(f => f === 'zigzag' ? 'dotted' : f).filter(f => ALL_STATUS_FILTERS.includes(f))
+                    : null
             };
         }
 
@@ -3700,13 +3719,13 @@ function getUnderlineHtml(noteOrStatuses) {
 
             const statusItems = [
                 { id: false, name: 'None', color: '#ffffff', dotBorder: 'border-gray-400' },
+                { id: 'checkmark', name: 'Tick', color: '#22c55e', dotBorder: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', dotBorder: 'border-amber-300' },
                 { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
                 { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
-                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', dotBorder: 'border-green-300' },
-                { id: 'dashed', name: 'Wave', color: '#0ea5e9', dotBorder: 'border-sky-300' },
-                { id: 'wave', name: 'Dashed', color: '#4f46e5', dotBorder: 'border-indigo-300' },
-                { id: 'zigzag', name: 'Zigzag', color: '#d946ef', dotBorder: 'border-amber-300' }
+                { id: 'dashed', name: 'Dashed', color: '#d946ef', dotBorder: 'border-fuchsia-300' },
+                { id: 'dotted', name: 'Dotted', color: '#4f46e5', dotBorder: 'border-indigo-300' },
+                { id: 'wave', name: 'Wave', color: '#0ea5e9', dotBorder: 'border-sky-300' }
             ];
 
             statusItems.forEach(item => {
@@ -3830,7 +3849,7 @@ function getUnderlineHtml(noteOrStatuses) {
             });
         }
 
-        const statusCycle = [false, 'single', 'double', 'triple', 'checkmark', 'dashed',  'wave', 'zigzag'];
+        const statusCycle = [false, 'checkmark', 'single', 'double', 'triple', 'dashed', 'dotted', 'wave'];
 
         function setNoteStatus(index, status) {
             const note = notes[index];
@@ -3896,13 +3915,13 @@ function getUnderlineHtml(noteOrStatuses) {
             // ==============================================================
             const options = [
                 { id: false, name: 'None', color: '#ffffff', border: 'border-gray-400' },
+                { id: 'checkmark', name: 'Tick', color: '#22c55e', border: 'border-green-300' },
                 { id: 'single', name: 'Single', color: '#f59e0b', border: 'border-amber-300' },
-                { id: 'double', name: 'Double', color: '#f97316', dotBorder: 'border-orange-300' },
-                { id: 'triple', name: 'Triple', color: '#ef4444', dotBorder: 'border-red-300' },
-                { id: 'checkmark', name: 'Checkmark', color: '#22c55e', border: 'border-green-300' },
-                { id: 'dashed', name: 'Wave', color: '#0ea5e9', dotBorder: 'border-sky-300' },
-                { id: 'wave', name: 'Dashed', color: '#4f46e5', dotBorder: 'border-indigo-300' },
-                { id: 'zigzag', name: 'Zigzag', color: '#d946ef', dotBorder: 'border-amber-300' }
+                { id: 'double', name: 'Double', color: '#f97316', border: 'border-orange-300' },
+                { id: 'triple', name: 'Triple', color: '#ef4444', border: 'border-red-300' },
+                { id: 'dashed', name: 'Dashed', color: '#d946ef', border: 'border-fuchsia-300' },
+                { id: 'dotted', name: 'Dotted', color: '#4f46e5', border: 'border-indigo-300' },
+                { id: 'wave', name: 'Wave', color: '#0ea5e9', border: 'border-sky-300' }
             ];
             let html = `<div class="menu-filter-container select-none">`;
             options.forEach(opt => {
